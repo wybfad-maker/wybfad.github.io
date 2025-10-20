@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title></title>
+  <style>
+    #app {
+      width: 100vw;
+      height: 100vh;
+      background: url(./wx.png);
+      background-size: cover;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app"><!--app-html--></div>
+  <script>
+    const appDiv = document.getElementById('app');
+    appDiv.addEventListener('click', (e) => {
+      window.location.href = 'https://work.weixin.qq.com/ca/cawcde0cbbc2952ef8';
+      // // 带认证的POST请求
+      // fetch('https://analytics.oceanengine.com/api/v2/conversion', {
+      //   method: 'POST',
+      //   headers: {
+      //     'Content-Type': 'application/json'
+      //   },
+      //   body: {
+      //     "event_type": "form",
+      //     "context": {
+      //       "ad": {
+      //         "callback": "EPHk9cX3pv4CGJax4ZENKI7w4MDev_4C",//callback 这里需要填写的就是从启动参数里获取的 clickid
+      //       }
+      //     },
+      //     "timestamp": 1604888786102
+      //   }
+      // })
+      //   .then(response => response.json())
+      //   .then(data => console.log(data));
+    });
+  </script>
+</body>
+
+</html>
