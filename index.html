@@ -35,6 +35,7 @@
       try {// 带认证的POST请求
         await fetch('https://analytics.oceanengine.com/api/v2/conversion', {
           method: 'POST',
+          mode: 'cors',
           headers: {
             'Content-Type': 'application/json'
           },
