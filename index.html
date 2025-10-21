@@ -8,7 +8,7 @@
     #app {
       width: 100vw;
       height: 100vh;
-      background: url(./wx.png);
+      background: url(./luodiye-2.png);
       background-size: cover;
     }
   </style>
@@ -34,25 +34,26 @@
       console.log('click', e, window, window.location);
       const query = getParamsFromUrl(window.location.href)
       console.log('query', query)
-      // 带认证的POST请求
-      fetch('https://analytics.oceanengine.com/api/v2/conversion', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: {
-          "event_type": "customer_effective",
-          "context": {
-            "ad": {
-              "callback": params.clickid,//callback 这里需要填写的就是从启动参数里获取的 clickid
-            }
+      try {// 带认证的POST请求
+        fetch('https://analytics.oceanengine.com/api/v2/conversion', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
           },
-          "timestamp": new Date().getTime(),
-        }
-      })
-      //   .then(response => response.json())
-      //   .then(data => console.log(data));
-      window.location.href = 'https://work.weixin.qq.com/ca/cawcde0cbbc2952ef8';
+          body: {
+            "event_type": "form",
+            "context": {
+              "ad": {
+                "callback": params.clickid,//callback 这里需要填写的就是从启动参数里获取的 clickid
+              }
+            },
+            "timestamp": new Date().getTime(),
+          }
+        })
+        //   .then(response => response.json())
+        //   .then(data => console.log(data));
+        window.location.href = 'https://work.weixin.qq.com/ca/cawcde0cbbc2952ef8';
+      } catch (e) { console.log(e) }
     });
   </script>
 </body>
