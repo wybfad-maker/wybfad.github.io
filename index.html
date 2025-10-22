@@ -4,11 +4,28 @@
 <head>
   <meta charset="UTF-8" />
   <title></title>
+  <script>
+    (function (r, d, s) {
+      r._tt_config = true; var _baq = (r._baq = r._baq || []); _baq.methods = ["track", "off", "on"];
+      _baq.factory = function (method) {
+        return function () {
+          var args = Array.prototype.slice.call(arguments);
+          args.unshift(method); _baq.push(args); return _baq
+        }
+      }; for (var i = 0; i < _baq.methods.length; i++) {
+        var key = _baq.methods[i]; _baq[key] = _baq.factory(key)
+      } _baq.load = function () {
+        var js, fjs = d.getElementsByTagName(s)[0]; js = d.createElement(s);
+        js.src = "https://analytics.oceanengine.com/api/v2/js/sdk"; fjs.parentNode.insertBefore(js, fjs)
+      };
+      _baq.load(); if (_baq.invoked) { return } _baq.invoked = true; _baq.track("pageview")
+    })(window, document, "script");
+  </script>
   <style>
     @charset "utf-8";
 
     html {
-      background-color: #fff;
+      background-color: #2A1449;
       color: #000;
       font-size: 12px
     }
@@ -224,57 +241,95 @@
       color: #25a4bb;
       text-decoration: none;
     }
-
+  </style>
+  <style>
     #app {
       width: 100vw;
       height: 100vh;
       background: url(./luodiye-2.png);
-      background-size: cover;
+      background-size: 100% auto;
+      background-repeat: no-repeat;
+    }
+
+    .img {
+      width: 100%;
+      height: 100%;
+    }
+
+    .btn {
+      width: 50vw;
+      position: absolute;
+      top: 100vw;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      /* 添加动画 */
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0% {
+        transform: translate(-50%, -50%) scale(1);
+      }
+
+      50% {
+        transform: translate(-50%, -50%) scale(1.1);
+      }
+
+      100% {
+        transform: translate(-50%, -50%) scale(1);
+      }
     }
   </style>
 </head>
 
 <body>
-  <div id="app"><!--app-html--></div>
-  <script>
-    function getParamsFromUrl (url) {
-      // 如果传入的是完整URL
-      const urlObj = new URL(url)
-      const params = new URLSearchParams(urlObj.search)
-      const result = {}
-      for (const [key, value] of params) {
-        result[key] = value
-      }
-      return result
-    }
-    const appDiv = document.getElementById('app');
-    appDiv.addEventListener('click', async (e) => {
-      console.log('click', e, window, window.location);
-      const query = getParamsFromUrl(window.location.href)
-      console.log('query', query)
-      try {// 带认证的POST请求
-        await fetch('https://analytics.oceanengine.com/api/v2/conversion', {
-          method: 'POST',
-          mode: 'cors',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: {
-            "event_type": "form",
-            "context": {
-              "ad": {
-                "callback": query.clickid,//callback 这里需要填写的就是从启动参数里获取的 clickid
-              }
-            },
-            "timestamp": new Date().getTime(),
-          }
-        })
-        //   .then(response => response.json())
-        //   .then(data => console.log(data));
-        window.location.href = 'https://work.weixin.qq.com/ca/cawcde0cbbc2952ef8';
-      } catch (e) { console.log(e) }
-    });
-  </script>
+  <div id="app">
+    <div id="btn" class="btn">
+      <img src="./btn.png" class="img">
+    </div>
+  </div>
 </body>
+<script>
+  function getParamsFromUrl (url) {
+    // 如果传入的是完整URL
+    const urlObj = new URL(url)
+    const params = new URLSearchParams(urlObj.search)
+    const result = {}
+    for (const [key, value] of params) {
+      result[key] = value
+    }
+    return result
+  }
+  const appDiv = document.getElementById('btn');
+  appDiv.addEventListener('click', async (e) => {
+    _baq.track("consult_effective", { click: true })
+    window.location.href = 'https://work.weixin.qq.com/ca/cawcde696a93e17ccc';
+    // console.log('click', e, window, window.location);
+    // const query = getParamsFromUrl(window.location.href)
+    // console.log('query', query)
+    // try {// 带认证的POST请求
+    //   await fetch('https://analytics.oceanengine.com/api/v2/conversion', {
+    //     method: 'POST',
+    //     mode: 'cors',
+    //     headers: {
+    //       'Content-Type': 'application/json'
+    //     },
+    //     body: {
+    //       "event_type": "form",
+    //       "context": {
+    //         "ad": {
+    //           "callback": query.clickid,//callback 这里需要填写的就是从启动参数里获取的 clickid
+    //         }
+    //       },
+    //       "timestamp": new Date().getTime(),
+    //     }
+    //   })
+    //   //   .then(response => response.json())
+    //   //   .then(data => console.log(data));
+    //   window.location.href = 'https://work.weixin.qq.com/ca/cawcde0cbbc2952ef8';
+    // } catch (e) { console.log(e) }
+
+  });
+</script>
 
 </html>
