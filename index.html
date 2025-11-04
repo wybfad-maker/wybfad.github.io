@@ -301,9 +301,15 @@
     return result
   }
   const appDiv = document.getElementById('btn');
+  const urlParams = new URLSearchParams(window.location.search);
+  const code = urlParams.get('code');
+  // window.location.href = `weixin://dl/business/?appid=wx927ddbaca8d41ea0&path=pages/home/home${code ? `&query=code=${code}` : ''}&env_version=trial`;
+
   appDiv.addEventListener('click', async (e) => {
     _baq.track("consult_effective", { click: true })
-    window.location.href = 'weixin://dl/business/?appid=wx927ddbaca8d41ea0&path=pages/home/home';
+    const urlParams = new URLSearchParams(window.location.search);
+    const code = urlParams.get('code');
+    window.location.href = `weixin://dl/business/?appid=wx927ddbaca8d41ea0&path=pages/home/home${code ? `&query=code=${code}` : ''}&env_version=trial`;
     /* console.log('click', e, window, window.location);
     const query = getParamsFromUrl(window.location.href)
     console.log('query', query)
