@@ -245,10 +245,13 @@
   <style>
     #app {
       width: 100vw;
-      height: 100vh;
-      background: url(./luodiye-2.png);
-      background-size: 100% auto;
-      background-repeat: no-repeat;
+      height: auto;
+    }
+
+    .bgImg {
+      width: 100vw;
+      height: auto;
+      z-index: -99;
     }
 
     .img {
@@ -259,7 +262,7 @@
     .btn {
       width: 50vw;
       position: absolute;
-      top: 100vw;
+      top: 86%;
       left: 50%;
       transform: translate(-50%, -50%);
       /* 添加动画 */
@@ -284,6 +287,7 @@
 
 <body>
   <div id="app">
+    <img src="./luodiye-2.png" class="bgImg">
     <div id="btn" class="btn">
       <img src="./btn.png" class="img">
     </div>
@@ -303,15 +307,16 @@
   const appDiv = document.getElementById('btn');
   const urlParams = new URLSearchParams(window.location.search);
   const code = urlParams.get('code');
+  // if (urlParams.get('t'))
   // window.location.href = `weixin://dl/business/?appid=wx927ddbaca8d41ea0&path=pages/home/home${code ? `&query=code=${code}` : ''}&env_version=trial`;
 
   appDiv.addEventListener('click', async (e) => {
     _baq.track("consult_effective", { click: true })
     const urlParams = new URLSearchParams(window.location.search);
     const code = urlParams.get('code');
-    window.location.href = `weixin://dl/business/?appid=wx927ddbaca8d41ea0&path=pages/home/home${code ? `&query=code=${code}` : ''}&env_version=trial`;
-    /* console.log('click', e, window, window.location);
-    const query = getParamsFromUrl(window.location.href)
+    window.location.href = `weixin://dl/business/?appid=wx927ddbaca8d41ea0&path=pages/home/home${code ? `&query=code=${code}` : ''}`;
+    //console.log('click', e, window, window.location);
+    /*const query = getParamsFromUrl(window.location.href)
     console.log('query', query)
     try {// 带认证的POST请求
       await fetch('https://analytics.oceanengine.com/api/v2/conversion', {

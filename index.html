@@ -246,9 +246,15 @@
     #app {
       width: 100vw;
       height: 100vh;
-      background: url(./luodiye-2.png);
+      /* background: url(./luodiye-2.png);
       background-size: 100% auto;
-      background-repeat: no-repeat;
+      background-repeat: no-repeat; */
+    }
+
+    .bgImg {
+      width: 100vw;
+      height: auto;
+      z-index: -99;
     }
 
     .img {
@@ -284,6 +290,7 @@
 
 <body>
   <div id="app">
+    <img src="./luodiye-2.png" class="bgImg">
     <div id="btn" class="btn">
       <img src="./btn.png" class="img">
     </div>
