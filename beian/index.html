@@ -344,6 +344,9 @@
     /* .yyt_footer a {
       color: #999;
     } */
+    .no-display {
+      display: none;
+    }
 
     @keyframes pulse {
       0% {
@@ -394,25 +397,26 @@
   const btnDiv2 = document.getElementById('btn2');
   const copyright = document.getElementById('copyright');
   // appBg.style.transform = `scale(${window.innerWidth / 1920})`;
-  window.addEventListener('resize', () => {
+  const resetStyle = () => {
     if (window.innerWidth < window.innerHeight) {
       document.body.style.width = '1920px';
+      document.body.style.height = '100vh';
       bgImg.src = './statics/luodiye_2.png'
       bgImg.style.width = '100%';
       bgImgBox.style.width = '100%'
-      if (window.innerWidth < 428) {
+      if (window.innerWidth < 1920) {
+        appBg.style.transform = `scale(${window.innerWidth / 1920})`;
+        bgImg.style.height = 'auto';
         btnDiv1.style.width = '12rem'
         btnDiv2.style.width = '12rem'
-        bgImg.style.width = '100%';
-        copyright.style.fontSize = '0.4rem';
-        copyright.style.lineHeight = '0.5rem';
+        copyright.style.fontSize = '0.7rem';
+        copyright.style.lineHeight = '0.74rem';
       } else {
         btnDiv1.style.width = '10rem'
         btnDiv2.style.width = '10rem'
         bgImg.style.width = '100%';
-        copyright.style.fontSize = '0.38rem';
-        copyright.style.lineHeight = '0.4rem';
-
+        copyright.style.fontSize = '0.48rem';
+        copyright.style.lineHeight = '0.5rem';
       }
     } else {
       appBg.style.width = '1920px';
@@ -428,6 +432,10 @@
       copyright.style.fontSize = '0.28rem';
       copyright.style.lineHeight = '0.3rem';
     }
+  }
+  resetStyle();
+  window.addEventListener('resize', () => {
+    resetStyle();
   })
   const urlParams = new URLSearchParams(window.location.search);
   let code = urlParams.get('code');
