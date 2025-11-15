@@ -269,14 +269,14 @@
       display: flex;
       flex-direction: row;
       position: absolute;
-      bottom: -1.2rem;
+      bottom: -60px;
       left: 50%;
       transform: translateX(-50%);
       animation: pulse 2s ease-in-out infinite;
     }
 
     .btn {
-      width: 6rem;
+      width: 300px;
     }
 
     .copyright {
@@ -284,8 +284,8 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      font-size: 0.28rem;
-      line-height: 0.3rem;
+      font-size: 0.4rem;
+      line-height: 0.5rem;
       text-align: center;
       margin-top: 2rem;
     }
@@ -375,8 +375,8 @@
       <!--公共_底部_备案号-->
       <p>
         <a href="https://www.12377.cn/" target="_blank" rel="nofollow">网上有害信息举报</a><br>
-        <a href="https://beian.miit.gov.cn/" rel="nofollow"
-          target="_blank">苏ICP备2025193514号-2X</a>&nbsp;<!--<a href="#" target="_blank">京ICP证161188号</a>&nbsp;--><a
+        <a href="https://beian.miit.gov.cn/" rel="nofollow" target="_blank">苏ICP备2025193514号-2X</a>&nbsp;<!--<a href="#"
+          target="_blank">京ICP证161188号</a>&nbsp;--><a
           href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=11010802020593" rel="nofollow"
           style="display:inline-block;text-decoration:none;height:20px;line-height:20px;" target="_blank"><!--<img
             src="./gongbei.png" style="float:left;">苏公网安备11010802020593号--></a>
@@ -388,45 +388,38 @@
   console.log(window, window.location);
   const appBg = document.getElementById('app');
   const bgImg = document.getElementById('bgImg');
-  const bgImgBox = document.getElementsByClassName('bgImg')[0];
   const btnDiv = document.getElementById('btn');
   const btnDiv1 = document.getElementById('btn1');
   const btnDiv2 = document.getElementById('btn2');
   const copyright = document.getElementById('copyright');
   // appBg.style.transform = `scale(${window.innerWidth / 1920})`;
   window.addEventListener('resize', () => {
+    appBg.style.transform = `scale(${window.innerWidth / 1920})`;
     if (window.innerWidth < window.innerHeight) {
-      document.body.style.width = '1920px';
       bgImg.src = './statics/luodiye_2.png'
-      bgImg.style.width = '100%';
-      bgImgBox.style.width = '100%'
-      if (window.innerWidth < 428) {
-        btnDiv1.style.width = '12rem'
-        btnDiv2.style.width = '12rem'
-        bgImg.style.width = '100%';
-        copyright.style.fontSize = '0.4rem';
-        copyright.style.lineHeight = '0.5rem';
+      if (window.innerWidth <= 425) {
+        btnDiv1.style.width = '600px'
+        btnDiv2.style.width = '600px'
+        bgImg.style.width = '1920px';
+        appBg.style.width = 'fit-content';
+        copyright.style.fontSize = '0.8rem';
+        copyright.style.lineHeight = '1rem';
       } else {
-        btnDiv1.style.width = '10rem'
-        btnDiv2.style.width = '10rem'
-        bgImg.style.width = '100%';
-        copyright.style.fontSize = '0.38rem';
-        copyright.style.lineHeight = '0.4rem';
+        btnDiv1.style.width = '500px'
+        btnDiv2.style.width = '500px'
+        bgImg.style.width = '1366px';
+        copyright.style.fontSize = '0.6rem';
+        copyright.style.lineHeight = '0.8rem';
 
       }
     } else {
       appBg.style.width = '1920px';
-      appBg.style.transform = `scale(${window.innerWidth / 1920})`;
       bgImg.src = './statics/luodiye.png'
       bgImg.style.width = '1366px';
-      bgImgBox.style.display = 'flex';
-      bgImgBox.style.alignItems = 'center';
-      bgImgBox.style.justifyContent = 'center';
-      bgImgBox.style.flexDirection = 'column';
-      btnDiv1.style.width = '6rem'
-      btnDiv2.style.width = '6rem'
-      copyright.style.fontSize = '0.28rem';
-      copyright.style.lineHeight = '0.3rem';
+      btnDiv1.style.width = '300px'
+      btnDiv2.style.width = '300px'
+      copyright.style.fontSize = '0.4rem';
+      copyright.style.lineHeight = '0.5rem';
     }
   })
   const urlParams = new URLSearchParams(window.location.search);
