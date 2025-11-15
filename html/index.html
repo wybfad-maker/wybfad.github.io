@@ -282,10 +282,6 @@
       background: #050505;
     }
 
-    .yyt_footer a {
-      color: #999;
-    }
-
     @keyframes pulse {
       0% {
         transform: translate(-50%, -50%) scale(1);
@@ -311,13 +307,16 @@
     <div class="yyt_footer">
       Copyright©2015-2025 苏州游易兔网络科技有限公司 .All Rights Reserved<br>
       <!--公共_底部_备案号-->
-      <p>
-        <a href="https://www.12377.cn/" target="_blank" rel="nofollow">网上有害信息举报</a><br>
-        <a href="https://beian.miit.gov.cn/" rel="nofollow" target="_blank">苏ICP备2025193514号-2X</a>&nbsp;<!--<a href="#"
-          target="_blank">京ICP证161188号</a>&nbsp;--><a
+      <p><a href="https://www.12377.cn/" target="_blank" rel="nofollow">网上有害信息举报</a><br><a
+          href="https://beian.miit.gov.cn/" rel="nofollow" target="_blank">京ICP备10218183号-1</a>&nbsp;<a
+          href="https://www.offcn.com/about/jyxkz.html" target="_blank">京ICP证161188号</a>&nbsp;<a
           href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=11010802020593" rel="nofollow"
-          style="display:inline-block;text-decoration:none;height:20px;line-height:20px;" target="_blank"><!--<img
-            src="./gongbei.png" style="float:left;">苏公网安备11010802020593号--></a>
+          style="display:inline-block;text-decoration:none;height:20px;line-height:20px;" target="_blank"><img
+            src="//www.offcn.com/statics/images/gongbei.png"
+            style="float:left;">京公网安备11010802020593号</a>出版物经营许可证新出发京批字第直130052号
+        <a href="https://zzlz.gsxt.gov.cn/businessCheck/verifKey.do?showType=p&amp;serial=91330106589876362L-SAIC_SHOW_10000091330106589876362L1598583385348&amp;signData=MEUCIHrY2Sb9AGafLcBuh6k3VnSlZJWOScxlhu3ax6Djxg8/AiEA7j9XP153DieiQGYh7jz8Raiorok8h1viY3ANTG3RvjE="
+          rel="nofollow" target="_blank"><img height="20" src="//zj.offcn.com/dl/2020/0828/20200828111936343.png"
+            width="20"></a>
       </p>
     </div>
   </div>
@@ -333,22 +332,16 @@
     }
     return result
   }
-  console.log(window, window.location);
   const appDiv = document.getElementById('btn');
   const urlParams = new URLSearchParams(window.location.search);
   const code = urlParams.get('code');
-  console.log(code);
   // window.location.href = `weixin://dl/business/?appid=wx927ddbaca8d41ea0&path=pages/home/home${code ? `&query=code=${code}` : ''}&env_version=trial`;
 
   appDiv.addEventListener('click', async (e) => {
     _baq.track("consult_effective", { click: true })
     const urlParams = new URLSearchParams(window.location.search);
-    let code = urlParams.get('code');
-    if (window.location.origin === 'yyt.xmjiaz888.cn') {
-      code = 'baidu01'
-    }
-    console.log(code);
-    window.location.href = `weixin://dl/business/?appid=wx927ddbaca8d41ea0&path=pages/home/home${code ? `&query=code=${code}` : ''}`;
+    const code = urlParams.get('code');
+    window.location.href = `weixin://dl/business/?appid=wx927ddbaca8d41ea0&path=pages/home/home${code ? `&query=code=${code}` : ''}&env_version=trial`;
   });
 </script>
 
