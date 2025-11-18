@@ -11,6 +11,9 @@ const useProductEffect = (app, db) => {
         if (err) {
           return res.status(500).json({ error: err.message });
         }
+        if (!rows) {
+          return res.status(404).json({ error: 'Products not found' });
+        }
         res.json({
           code: 200,
           data: rows,
@@ -25,7 +28,7 @@ const useProductEffect = (app, db) => {
           return res.status(500).json({ error: err.message });
         }
         if (!row) {
-          return res.status(404).json({ error: 'User not found' });
+          return res.status(404).json({ error: 'Products not found' });
         }
         res.json({
           code: 200,
@@ -41,7 +44,7 @@ const useProductEffect = (app, db) => {
           return res.status(500).json({ error: err.message });
         }
         if (!row) {
-          return res.status(404).json({ error: 'User not found' });
+          return res.status(404).json({ error: 'Products not found' });
         }
         res.json({
           code: 200,
