@@ -1,19 +1,86 @@
-const http = require('http');
+const express = require('express');
+const sqlite3 = require('sqlite3').verbose();
+const app = express();
+const port = 3000;
 
-// 创建服务器
-const server = http.createServer((req, res) => {
-  // 设置HTTP响应的状态码和头信息
-  res.writeHead(200, {
-    // 设置内容类型为 HTML，并指定字符集为 UTF-8，这样中文不会乱码
-    'Content-Type': 'text/html; charset=utf-8' 
+// 使用json中间件来解析JSON请求体
+app.use(express.json());
+
+// 连接到SQLite数据库
+// let db = new sqlite3.Database(':memory:');
+let db = new sqlite3.Database('myDatabase.db');
+console.log('Connected to the database.', db);
+
+//创建一个示例表
+// db.serialize(() => {
+//   db.run("CREATE TABLE users (id INTEGER PRIMARY KEY, name TEXT, email TEXT)");
+// });
+
+// 插入数据的API
+app.post('/addUser', (req, res) => {
+  const { name, email } = req.body;
+  const stmt = db.prepare("INSERT INTO user (name, email) VALUES (?, ?)");
+  stmt.run(name, email, function (err) {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    res.json({ id: this.lastID });
   });
-
-  // 发送响应体
-  res.end('<h1>Hello, World!</h1><p>这是我的第一个 Node.js 应用。</p>');
+  stmt.finalize();
 });
 
-// 监听端口
-const PORT = 3000;
-server.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
+// 查询所有用户的API
+app.get('/users', (req, res) => {
+  db.all("SELECT * FROM users", [], (err, rows) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    res.json({
+      code: 200,
+      data: {
+        code: 200,
+        message: 'success',
+        total: rows.length,
+        users: rows
+      },
+      message: 'success'
+    });
+  });
+});
+
+// 根据ID查询用户的API
+app.get('/users/:id', (req, res) => {
+  const id = req.params.id;
+  db.get("SELECT * FROM users WHERE id = ?", [id], (err, row) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    if (!row) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    res.json({
+      code: 200,
+      data: {
+        code: 200,
+        message: 'success',
+        users: row
+      },
+      message: 'success'
+    });
+  });
+});
+
+// 关闭数据库连接
+// app.use((req, res, next) => {
+//   db.close((err) => {
+//     if (err) {
+//       return res.status(500).json({ error: err.message });
+//     }
+//     next();
+//   });
+// });
+
+// 启动服务器
+app.listen(port, () => {
+  console.log(`Server running at http://localhost:${port}/`);
 });

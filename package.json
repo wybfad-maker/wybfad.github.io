@@ -1,0 +1,25 @@
+{
+  "name": "wybfad.github.io",
+  "version": "1.0.0",
+  "description": "",
+  "homepage": "https://github.com/wybfad-maker/wybfad.github.io#readme",
+  "bugs": {
+    "url": "https://github.com/wybfad-maker/wybfad.github.io/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wybfad-maker/wybfad.github.io.git"
+  },
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "express": "^5.1.0",
+    "nodemon": "^3.1.11",
+    "sqlite3": "^5.1.7"
+  }
+}
