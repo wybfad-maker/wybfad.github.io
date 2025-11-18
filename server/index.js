@@ -1,5 +1,7 @@
-const { useUserEffect } = require('./users/useUserEffect.js');
+const useUserEffect = require('./users/index.js');
+const useProductEffect = require('./products/index.js');
+const useOrderEffect = require('./orders/index.js');
 
 module.exports = {
-  useUserEffect
+  useUserEffect, useProductEffect, useOrderEffect
 };

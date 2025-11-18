@@ -53,4 +53,4 @@ const useUserEffect = (app, db) => {
     });
   });
 }
-module.exports = { useUserEffect };
+module.exports = useUserEffect;

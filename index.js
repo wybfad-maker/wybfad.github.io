@@ -2,7 +2,8 @@ const express = require('express');
 const sqlite3 = require('sqlite3').verbose();
 const app = express();
 const port = 3000;
-const { useUserEffect } = require('./server/index.js');
+const { useUserEffect, useProductEffect, useOrderEffect } = require('./server/index.js');
+
 // 使用json中间件来解析JSON请求体
 app.use(express.json());
 
@@ -13,11 +14,16 @@ console.log('Connected to the database.', db);
 
 //创建一个示例表
 // db.serialize(() => {
-//   db.run("CREATE TABLE users (id INTEGER PRIMARY KEY, name TEXT, email TEXT)");
+//   db.run("CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, email TEXT)");
 // });
 
 // 用户相关的路由和逻辑
 useUserEffect(app, db);
+// 商品相关的路由和逻辑
+useProductEffect(app, db);
+// 订单相关的路由和逻辑
+useOrderEffect(app, db);
+
 
 // 关闭数据库连接
 // app.use((req, res, next) => {
