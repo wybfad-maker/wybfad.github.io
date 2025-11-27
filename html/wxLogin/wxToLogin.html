@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>微信授权登录</title>
+  <script src="https://unpkg.com/vue@2.6.14/dist/vue.js"></script>
+  <script src="https://unpkg.com/@dcloudio/uni-ui/lib/uni-badge/uni-badge.vue"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, sans-serif;
+    }
+
+    body {
+      background-color: #f8f8f8;
+      color: #333;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 400px;
+      margin: 0 auto;
+      padding: 20px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .card {
+      background: white;
+      border-radius: 16px;
+      padding: 30px 20px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .logo {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 20px;
+      background: linear-gradient(135deg, #07C160, #09BB07);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 36px;
+    }
+
+    h1 {
+      font-size: 24px;
+      margin-bottom: 10px;
+      color: #333;
+    }
+
+    .subtitle {
+      color: #666;
+      font-size: 14px;
+      margin-bottom: 30px;
+    }
+
+    .login-btn {
+      background-color: #07C160;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 14px 20px;
+      font-size: 16px;
+      width: 100%;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin: 20px 0;
+    }
+
+    .login-btn:hover {
+      background-color: #06AD56;
+    }
+
+    .login-btn:active {
+      background-color: #059A4C;
+    }
+
+    .login-btn i {
+      font-size: 20px;
+    }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      margin: 30px 0;
+      color: #999;
+      font-size: 14px;
+    }
+
+    .divider::before,
+    .divider::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background-color: #e5e5e5;
+    }
+
+    .divider span {
+      padding: 0 15px;
+    }
+
+    .other-login {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .other-btn {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f5f5f5;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .other-btn:hover {
+      background: #e5e5e5;
+    }
+
+    .loading {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 2px solid rgba(255, 255, 255, .3);
+      border-radius: 50%;
+      border-top-color: #fff;
+      animation: spin 1s ease-in-out infinite;
+      margin-right: 8px;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .result-card {
+      text-align: left;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .avatar {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      margin-right: 15px;
+      background: #f0f0f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #999;
+    }
+
+    .user-details {
+      flex: 1;
+    }
+
+    .user-name {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .user-id {
+      color: #666;
+      font-size: 14px;
+    }
+
+    .info-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .info-label {
+      color: #666;
+    }
+
+    .info-value {
+      font-weight: 500;
+    }
+
+    .logout-btn {
+      background-color: #f0f0f0;
+      color: #333;
+      border: none;
+      border-radius: 8px;
+      padding: 12px 20px;
+      font-size: 16px;
+      width: 100%;
+      cursor: pointer;
+      margin-top: 20px;
+      transition: background-color 0.3s;
+    }
+
+    .logout-btn:hover {
+      background-color: #e5e5e5;
+    }
+
+    .error-message {
+      color: #e64340;
+      background: #fef0ef;
+      padding: 12px;
+      border-radius: 8px;
+      margin: 15px 0;
+      font-size: 14px;
+      text-align: left;
+    }
+
+    .footer {
+      text-align: center;
+      color: #999;
+      font-size: 12px;
+      margin-top: 30px;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app">
+    <div class="container">
+      <div class="card" v-if="!isLoggedIn && !isLoading">
+        <div class="logo">
+          <span>微</span>
+        </div>
+        <h1>微信授权登录</h1>
+        <p class="subtitle">请使用微信扫码或点击下方按钮授权登录</p>
+
+        <button class="login-btn" @click="wechatLogin">
+          <span v-if="!loadingAuth">微信一键登录</span>
+          <div v-else>
+            <div class="loading"></div>
+            授权中...
+          </div>
+        </button>
+
+        <div class="divider">
+          <span>其他登录方式</span>
+        </div>
+
+        <div class="other-login">
+          <div class="other-btn" title="手机号登录">📱</div>
+          <div class="other-btn" title="账号密码登录">👤</div>
+          <div class="other-btn" title="邮箱登录">📧</div>
+        </div>
+      </div>
+
+      <div class="card" v-if="isLoading">
+        <div class="logo">
+          <span>微</span>
+        </div>
+        <h1>登录中...</h1>
+        <p class="subtitle">正在处理授权信息，请稍候</p>
+        <div style="margin: 30px 0;">
+          <div class="loading" style="border-top-color: #07C160; width: 40px; height: 40px;"></div>
+        </div>
+      </div>
+
+      <div class="card result-card" v-if="isLoggedIn && !isLoading">
+        <div class="user-info">
+          <div class="avatar">
+            <span>👤</span>
+          </div>
+          <div class="user-details">
+            <div class="user-name">{{ userInfo.nickname || '微信用户' }}</div>
+            <div class="user-id">ID: {{ userInfo.openid || 'wx_123456789' }}</div>
+          </div>
+        </div>
+
+        <div class="info-item">
+          <span class="info-label">登录方式</span>
+          <span class="info-value">微信授权登录</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">登录时间</span>
+          <span class="info-value">{{ loginTime }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">授权状态</span>
+          <span class="info-value" style="color: #07C160;">已授权</span>
+        </div>
+
+        <button class="logout-btn" @click="logout">退出登录</button>
+      </div>
+
+      <div class="card" v-if="errorMessage">
+        <div class="logo" style="background: linear-gradient(135deg, #e64340, #d81e06);">
+          <span>!</span>
+        </div>
+        <h1>授权失败</h1>
+        <div class="error-message">
+          {{ errorMessage }}
+        </div>
+        <button class="login-btn" @click="retryLogin" style="background-color: #e64340;">
+          重新尝试
+        </button>
+      </div>
+
+      <div class="footer">
+        <p>© 2023 示例应用 | 遵循微信开放平台规范</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    new Vue({
+      el: '#app',
+      data: {
+        isLoggedIn: false,
+        isLoading: false,
+        loadingAuth: false,
+        errorMessage: '',
+        userInfo: {},
+        loginTime: ''
+      },
+      mounted () {
+        // 检查URL中是否有微信授权返回的code
+        this.checkWechatAuthCode();
+      },
+      methods: {
+        // 微信登录按钮点击
+        wechatLogin () {
+          this.loadingAuth = true;
+          this.errorMessage = '';
+
+          // 模拟发起微信授权请求
+          setTimeout(() => {
+            // 在实际项目中，这里应该跳转到微信授权URL
+            // window.location.href = this.getWechatAuthUrl();
+
+            // 模拟授权成功
+            this.simulateWechatAuth();
+          }, 1500);
+        },
+
+        // 生成微信授权URL（实际项目中使用）
+        getWechatAuthUrl () {
+          const appId = 'your_wechat_appid'; // 替换为实际AppID
+          const redirectUri = encodeURIComponent(window.location.href.split('?')[0]);
+          const state = 'STATE'; // 可自定义参数，用于防止CSRF攻击
+          const scope = 'snsapi_userinfo'; // 授权作用域
+
+          return `https://open.weixin.qq.com/connect/oauth2/authorize?appid=${appId}&redirect_uri=${redirectUri}&response_type=code&scope=${scope}&state=${state}#wechat_redirect`;
+        },
+
+        // 检查URL中是否有微信授权返回的code
+        checkWechatAuthCode () {
+          // 模拟从URL获取code
+          const urlParams = new URLSearchParams(window.location.search);
+          const code = urlParams.get('code');
+
+          if (code) {
+            this.isLoading = true;
+            // 在实际项目中，这里应该将code发送到后端换取access_token和用户信息
+            setTimeout(() => {
+              this.exchangeCodeForToken(code);
+            }, 1000);
+          }
+        },
+
+        // 使用code换取access_token（实际项目中由后端完成）
+        exchangeCodeForToken (code) {
+          // 模拟API请求
+          setTimeout(() => {
+            // 模拟成功响应
+            this.isLoading = false;
+            this.isLoggedIn = true;
+            this.userInfo = {
+              openid: 'wx_123456789',
+              nickname: '微信用户',
+              sex: 1,
+              province: '广东省',
+              city: '深圳市',
+              country: '中国',
+              headimgurl: ''
+            };
+            this.loginTime = new Date().toLocaleString();
+
+            // 在实际项目中，这里应该存储token等信息
+          }, 1500);
+        },
+
+        // 模拟微信授权流程（仅用于演示）
+        simulateWechatAuth () {
+          this.loadingAuth = false;
+
+          // 模拟授权弹窗
+          if (confirm('是否同意"示例应用"获取您的微信个人信息？')) {
+            this.isLoading = true;
+
+            // 模拟授权成功
+            setTimeout(() => {
+              this.isLoading = false;
+              this.isLoggedIn = true;
+              this.userInfo = {
+                openid: 'wx_123456789',
+                nickname: '微信用户',
+                sex: 1,
+                province: '广东省',
+                city: '深圳市',
+                country: '中国',
+                headimgurl: ''
+              };
+              this.loginTime = new Date().toLocaleString();
+            }, 2000);
+          } else {
+            this.errorMessage = '您已取消微信授权';
+          }
+        },
+
+        // 退出登录
+        logout () {
+          this.isLoggedIn = false;
+          this.userInfo = {};
+          this.errorMessage = '';
+        },
+
+        // 重新尝试登录
+        retryLogin () {
+          this.errorMessage = '';
+          this.wechatLogin();
+        }
+      }
+    });
+  </script>
+</body>
+
+</html>
