@@ -18,27 +18,27 @@ export const openfile = (file) => {
     };
   }
 }
-export const openWinfileImg0 = (file) => {
-  const file = await window.showOpenFilePicker();
-  const fileReader = new FileReader();
-  fileReader.readAsDataURL(file);
-  fileReader.onload = () => {
-    const img = new Image();
-    img.src = fileReader.result;
-    img.onload = () => {
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
-      canvas.width = img.width;
-      canvas.height = img.height;
-      ctx.drawImage(img, 0, 0);
-      const dataURL = canvas.toDataURL('image/jpeg');
-      const a = document.createElement('a');
-      a.href = dataURL;
-      a.download = file.name;
-      a.click();
-    };
-  }
-}
+// export const openWinfileImg0 = (file) => {
+//   const file = await window.showOpenFilePicker();
+//   const fileReader = new FileReader();
+//   fileReader.readAsDataURL(file);
+//   fileReader.onload = () => {
+//     const img = new Image();
+//     img.src = fileReader.result;
+//     img.onload = () => {
+//       const canvas = document.createElement('canvas');
+//       const ctx = canvas.getContext('2d');
+//       canvas.width = img.width;
+//       canvas.height = img.height;
+//       ctx.drawImage(img, 0, 0);
+//       const dataURL = canvas.toDataURL('image/jpeg');
+//       const a = document.createElement('a');
+//       a.href = dataURL;
+//       a.download = file.name;
+//       a.click();
+//     };
+//   }
+// }
 // 图片转为base64格式（异步）（推荐）（成功）
 export const openWinfileImg1 = () => {
   // 打开窗口选择指定类型文件
