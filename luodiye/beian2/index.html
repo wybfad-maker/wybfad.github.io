@@ -5,21 +5,29 @@
   <meta charset="UTF-8" />
   <title></title>
   <script>
-    (function (r, d, s) {
-      r._tt_config = true; var _baq = (r._baq = r._baq || []); _baq.methods = ["track", "off", "on"];
-      _baq.factory = function (method) {
-        return function () {
-          var args = Array.prototype.slice.call(arguments);
-          args.unshift(method); _baq.push(args); return _baq
-        }
-      }; for (var i = 0; i < _baq.methods.length; i++) {
-        var key = _baq.methods[i]; _baq[key] = _baq.factory(key)
-      } _baq.load = function () {
-        var js, fjs = d.getElementsByTagName(s)[0]; js = d.createElement(s);
-        js.src = "https://analytics.oceanengine.com/api/v2/js/sdk"; fjs.parentNode.insertBefore(js, fjs)
-      };
-      _baq.load(); if (_baq.invoked) { return } _baq.invoked = true; _baq.track("pageview")
-    })(window, document, "script");
+    // (function (r, d, s) {
+    //   r._tt_config = true; var _baq = (r._baq = r._baq || []); _baq.methods = ["track", "off", "on"];
+    //   _baq.factory = function (method) {
+    //     return function () {
+    //       var args = Array.prototype.slice.call(arguments);
+    //       args.unshift(method); _baq.push(args); return _baq
+    //     }
+    //   }; for (var i = 0; i < _baq.methods.length; i++) {
+    //     var key = _baq.methods[i]; _baq[key] = _baq.factory(key)
+    //   } _baq.load = function () {
+    //     var js, fjs = d.getElementsByTagName(s)[0]; js = d.createElement(s);
+    //     js.src = "https://analytics.oceanengine.com/api/v2/js/sdk"; fjs.parentNode.insertBefore(js, fjs)
+    //   };
+    //   _baq.load(); if (_baq.invoked) { return } _baq.invoked = true; _baq.track("pageview")
+    // })(window, document, "script");
+    // 百度统计
+    // var _hmt = _hmt || [];
+    // (function () {
+    //   var hm = document.createElement("script");
+    //   hm.src = "https://hm.baidu.com/hm.js?4cdd21d0315017b786cf76ae17b48da6";
+    //   var s = document.getElementsByTagName("script")[0];
+    //   s.parentNode.insertBefore(hm, s);
+    // })();
   </script>
   <style>
     @charset "utf-8";
@@ -167,8 +175,7 @@
     canvas,
     video {
       display: inline-block;
-      *display: inline;
-      *zoom: 1
+      zoom: 1
     }
 
     blockquote:before,
@@ -276,14 +283,15 @@
       flex-direction: row;
       position: absolute;
       /* bottom: -1.2rem; */
-      top: 96vh;
+      /* top: 96vh; */
+      bottom: 36px;
       left: 50%;
       transform: translateX(-50%);
       animation: pulse 2s ease-in-out infinite;
     }
 
     .btn {
-      width: 6rem;
+      width: 16.8rem;
     }
 
     .copyright {
@@ -374,10 +382,11 @@
 <body>
   <div id="app" class="bg">
     <div class="bgImg">
-      <img src="./statics/luodiye.png" id="bgImg" class="img">
+      <img src="./statics/luodiye_pc.jpg" id="bgImg" class="img">
+      <!-- <div style="background: url(./statics/luodiye_pc.jpg);" id="bgImg" class="img"/> -->
       <div id="btn" class="btns">
         <img id="btn1" src="./statics/button/btn-1.png" class="btn">
-        <img id="btn2" src="./statics/button/btn-2.png" class="btn">
+        <img id="btn2" src="./statics/button/btn-2.png" class="btn no-display">
       </div>
     </div>
     <div class="copyright no-display" id="copyright">
@@ -395,7 +404,7 @@
   </div>
 </body>
 <script>
-  console.log(window, window.location);
+  // console.log(window, window.location);
   const appBg = document.getElementById('app');
   const bgImg = document.getElementById('bgImg');
   const bgImgBox = document.getElementsByClassName('bgImg')[0];
@@ -405,35 +414,43 @@
   const copyright = document.getElementById('copyright');
   // appBg.style.transform = `scale(${window.innerWidth / 1920})`;
   const resetStyle = () => {
-    btnDiv.style.top = `clamp('1.2rem', '96vh', '4rem')`
-    if (window.innerWidth < window.innerHeight) {
+    // btnDiv.style.top = `clamp('1.2rem', '96vh', '4rem')`
+    if (window.navigator.userAgent?.includes('Mobile') || window.innerWidth < window.innerHeight) {
       document.body.style.width = '1920px';
       document.body.style.minHeight = '100vh';
+      document.body.style.backgroundColor = '#110e1d';
       // btnDiv.style.bottom = 'none';
-      btnDiv.style.top = `150vh`;
-      bgImg.src = './statics/luodiye_2.png'
+      // btnDiv.style.top = `150vh`;
+      btnDiv.style.bottom = `${135 * window.innerWidth / 1920}px`;
+      bgImg.src = './statics/luodiye_h5.jpg'
       bgImg.style.width = '100%';
       bgImgBox.style.width = '100%'
       if (window.innerWidth < 1920) {
         appBg.style.transform = `scale(${window.innerWidth / 1920})`;
+        btnDiv.style.bottom = `${110 * window.innerWidth / 1920}px`;
         bgImg.style.height = 'auto';
-        btnDiv1.style.width = '12rem'
-        btnDiv2.style.width = '12rem'
+        // btnDiv1.style.width = '16.8rem'
+        btnDiv1.style.width = `16.8rem`;
+        btnDiv2.style.width = '16.8rem'
         copyright.style.fontSize = '0.7rem';
         copyright.style.lineHeight = '0.74rem';
       } else {
-        btnDiv1.style.width = '10rem'
-        btnDiv2.style.width = '10rem'
+        btnDiv1.style.width = '16rem'
+        btnDiv2.style.width = '16rem'
         bgImg.style.width = '100%';
+        btnDiv.style.bottom = `${100 * window.innerWidth / 1920}px`;
         copyright.style.fontSize = '0.48rem';
         copyright.style.lineHeight = '0.5rem';
       }
     } else {
+      document.body.style.backgroundColor = '#0b0a0a';
       appBg.style.width = '1920px';
       appBg.style.transform = `scale(${window.innerWidth / 1920})`;
       // btnDiv.style.bottom = '-1.2rem';
-      btnDiv.style.top = `96vh`;
-      bgImg.src = './statics/luodiye.png'
+      // btnDiv.style.top = `${665 * window.innerWidth / 1920}px`;
+      // btnDiv.style.top = `${96 * window.innerWidth / 1920}vh`;
+      btnDiv.style.bottom = `${10 * window.innerWidth / 1920}px`;
+      bgImg.src = './statics/luodiye_pc.jpg'
       bgImg.style.width = '1366px';
       bgImgBox.style.display = 'flex';
       bgImgBox.style.alignItems = 'center';
@@ -451,21 +468,44 @@
   })
   const urlParams = new URLSearchParams(window.location.search);
   let code = urlParams.get('code');
-  if (window.location.hostname === 'yyt.xmjiaz888.cn') {
+  let bd_vid = urlParams.get('bd_vid');
+  // if (window.location.hostname === 'yyt.xmjiaz888.cn') {
+  //   code = 'baidu02'
+  // } else
+  if (window.location.hostname === 'http://yyt.wxqzlkj.cn') {
     code = 'baidu01'
   } else if (window.location.hostname === 'wybfad-maker.github.io') {
     code = 'github_wybfad'
   }
   console.log(code);
+  //正式版为release，体验版为trial，开发版为develop
   // window.location.href = `weixin://dl/business/?appid=wx927ddbaca8d41ea0&path=pages/home/home${code ? `&query=code=${code}` : ''}&env_version=trial`;
 
+  let miniLinkQuery = '';
+  if (bd_vid) {
+    miniLinkQuery += `bd_vid=${bd_vid}`
+    if (code) {
+      miniLinkQuery += `&code=${code}`
+    }
+  } else if (code) {
+    miniLinkQuery += `code=${code}`
+  }
+  if (miniLinkQuery) {
+    miniLinkQuery = `&query=${miniLinkQuery}`;
+    //&env_version=trial
+  }
+  bgImg.addEventListener('click', async (e) => {
+    // _baq.track("consult_effective", { click: true })
+    window.location.href = `weixin://dl/business/?appid=wx927ddbaca8d41ea0&path=pages/home/home${miniLinkQuery}`;
+  });
   btnDiv1.addEventListener('click', async (e) => {
-    _baq.track("consult_effective", { click: true })
-    window.location.href = `weixin://dl/business/?appid=wx927ddbaca8d41ea0&path=pages/home/home${code ? `&query=code=${code}` : ''}`;
+    // _baq.track("consult_effective", { click: true })
+    window.location.href = `weixin://dl/business/?appid=wx927ddbaca8d41ea0&path=pages/home/home${miniLinkQuery}`;
   });
   btnDiv2.addEventListener('click', async (e) => {
-    _baq.track("consult_effective", { click: true })
-    window.location.href = `https://work.weixin.qq.com/ca/cawcde696a93e17ccc`;
+    // _baq.track("consult_effective", { click: true })
+    // window.location.href = `https://work.weixin.qq.com/ca/cawcde696a93e17ccc`;
+    window.location.href = `https://work.weixin.qq.com/kfid/kfce0edd762a4b0a54b`;
   });
 </script>
 
