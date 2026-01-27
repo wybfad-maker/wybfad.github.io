@@ -103,6 +103,36 @@ class Wyb {
       }, 400);
     });
   }
+
+  chooseImage (options) {
+    return new Promise((resolve, reject) => {
+      // 模拟选择图片
+      setTimeout(() => {
+        const success = Math.random() > 0.1; // 90% 成功率
+
+        if (success) {
+          const res = {
+            tempFilePaths: ['https://example.com/image.jpg']
+          };
+
+          if (options && options.success) {
+            options.success(res);
+          }
+          resolve(res);
+        } else {
+          const err = {
+            errCode: 'CHOOSE_IMAGE_FAILED',
+            errMsg: '选择图片失败'
+          };
+
+          if (options && options.fail) {
+            options.fail(err);
+          }
+          reject(err);
+        }
+      }, 200);
+    });
+  }
 }
 
 // 创建全局实例
