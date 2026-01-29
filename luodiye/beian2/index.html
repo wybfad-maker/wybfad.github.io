@@ -469,14 +469,15 @@
   const urlParams = new URLSearchParams(window.location.search);
   let code = urlParams.get('code');
   let bd_vid = urlParams.get('bd_vid');
+  let invitationCode = urlParams.get('invitationCode');
   // if (window.location.hostname === 'yyt.xmjiaz888.cn') {
   //   code = 'baidu02'
   // } else
-  if (window.location.hostname === 'http://yyt.wxqzlkj.cn') {
-    code = 'baidu01'
-  } else if (window.location.hostname === 'wybfad-maker.github.io') {
-    code = 'github_wybfad'
-  }
+  // if (window.location.hostname === 'http://yyt.wxqzlkj.cn') {
+  //   code = 'baidu01'
+  // } else if (window.location.hostname === 'wybfad-maker.github.io') {
+  //   code = 'github_wybfad'
+  // }
   console.log(code);
   //正式版为release，体验版为trial，开发版为develop
   // window.location.href = `weixin://dl/business/?appid=wx927ddbaca8d41ea0&path=pages/home/home${code ? `&query=code=${code}` : ''}&env_version=trial`;
@@ -490,8 +491,11 @@
   } else if (code) {
     miniLinkQuery += `code=${code}`
   }
+  if (invitationCode) {
+    miniLinkQuery += `invitationCode=${invitationCode}`
+  }
   if (miniLinkQuery) {
-    miniLinkQuery = `&query=${miniLinkQuery}`;
+    miniLinkQuery = `&query=${miniLinkQuery}&env_version=trial`;
     //&env_version=trial
   }
   bgImg.addEventListener('click', async (e) => {
