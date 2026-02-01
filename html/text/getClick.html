@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Click Toast</title>
+</head>
+
+<body>
+  <h1>Click Toast</h1>
+  <p>Click the button to show a toast message!</p>
+  <main>
+    <button>Show</button>
+    <button onclick="showToast1('hello Toast1!!!')">Show Toast1</button>
+    <button onclick="showToast2('hello Toast2!!!')">Show Toast2</button>
+    <button onclick="showToast3('hello Toast3!!!')">Show Toast3</button>
+    <button onclick="showToast4('hello Toast4!!!')">Show Toast4</button>
+  </main>
+
+  <script>
+    function getRandomColor () {
+      const letters = '0123456789ABCDEF';
+      let color = '#';
+      for (let i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+      }
+      return color;
+    }
+    function createShowToast (message) {
+      let count = 16;
+      const toast = document.createElement('div');
+      document.body.appendChild(toast);
+      toast.className = 'toast';
+      toast.textContent = message;
+      toast.style.color = getRandomColor();
+      return function () {
+        count += 1;
+        console.log(count);
+        toast.style.fontSize = `${count}px`;
+        // setTimeout(() => {
+        //   toast.remove();
+        // }, 3000);
+        return count;
+      }
+    }
+    const showToast1 = createShowToast('Hello, World_1!');
+    class Toast {
+      constructor(message) {
+        this.fontSize = 16;
+        this.message = message;
+        this.el = document.createElement('div');
+        this.el.className = 'toast';
+        this.el.textContent = message;
+        document.body.appendChild(this.el);
+        // setTimeout(() => {
+        //   this.el.remove();
+        // }, 3000);
+      };
+      show (msg) {
+        this.fontSize += 2;
+        console.log('show', this.fontSize);
+        // const div = document.createElement('div');
+        // div.textContent = msg;
+        // div.style.fontSize = `${this.fontSize}px`;
+        // document.body.appendChild(div);
+        this.el.textContent = msg;
+        this.el.style.color = getRandomColor();
+        this.el.style.transform = 'translateY(0)';
+        this.el.style.fontSize = `${this.fontSize}px`;
+        // setTimeout(() => {
+        //   div.remove();
+        // }, 3000);
+        return this.fontSize;
+      };
+      reset () {
+        this.fontSize = 16;
+        this.el.style.fontSize = `${this.fontSize}px`;
+      }
+      hide () {
+        this.el.style.transform = 'translateY(-100%)';
+      }
+    }
+    function showToast2 (message) {
+      const toast = new Toast(message || 'Hello, World_2!');
+      return toast.show();
+    }
+    const toast3 = (new Toast());
+    const showToast3 = (message) => {
+      toast3.show(message || 'Hello, World_3!');
+    }
+    // 每次点击加大2px字体，并显示toast，3秒后消失
+    /* function getElement (selector) {
+      return new Promise(resolve => {
+        const el = document.querySelector(selector);
+        console.log('el', el);
+        el._waitClick = new Promise(resolve => {
+          el.addEventListener('click', resolve, { once: true });
+        });
+      });
+    } */
+    // Element.prototype.waitClick = function () {
+    //   return new Promise(resolve => {
+    //     this.addEventListener('click', resolve, { once: true });
+    //   });
+    // }
+
+    function getElement (selector) {
+      const dom = document.querySelector(selector);
+      // console.log('dom', dom);
+      // dom.waitClick = new Promise((resolve) => {
+      //   dom.addEventListener('click', resolve, { once: true });
+      // })
+      // console.log('dom', dom);
+      // return dom;
+      const proxy = new Proxy(dom, {
+        get (target, prop, receiver) {
+          if (!prop.startsWith('wait')) {
+            return Reflect.get(target, prop, receiver);
+          }
+          if (prop === 'waitClick') {
+            return new Promise(resolve => {
+              const eventName = prop.slice(4).toLowerCase();
+              dom.addEventListener('click', resolve, { once: true });
+            });
+          }
+          return target[prop];
+        }
+      });
+      return proxy;
+    }
+    (async () => {
+      const btn = getElement('button');
+      console.log(btn);
+      while (1) {
+        await btn.waitClick;
+        console.log('Clicked!');
+      }
+    })();
+  </script>
+</body>
+
+</html>
