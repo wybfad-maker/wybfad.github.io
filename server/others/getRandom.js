@@ -95,7 +95,24 @@ function getRandomName () {
   ];
   return names[Math.floor(Math.random() * names.length)];
 }
+// 不要再用 Math.random()！用这个 API 做到真随机
+// 更安全的替代方案：crypto.getRandomValues()
+// window.crypto 是浏览器提供的一套用于密码学操作的 API，
+// 而 crypto.getRandomValues() 就是其中的一员。
+// 它是一个密码学安全伪随机数生成器 (CSPRNG)。
+// 与 Math.random() 不同，crypto.getRandomValues() 的设计目标
+// 就是提供密码学级别的安全性。
+function secureRandomInt (min = 0, max = 100) {
+  const range = max - min + 1;
+  // 创建一个足够大的随机数，以减少模偏差
+  const randomValue = new Uint32Array(1);
+  crypto.getRandomValues(randomValue);
 
+  return min + (randomValue[0] % range);
+}
+
+// console.log(secureRandomInt(1, 6));   // 模拟安全的骰子
+// console.log(secureRandomInt(1000, 9999)); // 生成一个安全的 4 位验证码
 // 导出通用集成函数
 export function useFnEffect () {
   return {
@@ -114,7 +131,8 @@ export function useFnEffect () {
     getRandomDate,
     getRandomColor,
     getRandomImage,
-    getRandomName
+    getRandomName,
+    secureRandomInt
   }
 }
 
@@ -136,5 +154,6 @@ export {
   getRandomDate,
   getRandomColor,
   getRandomImage,
-  getRandomName
+  getRandomName,
+  secureRandomInt
 };
