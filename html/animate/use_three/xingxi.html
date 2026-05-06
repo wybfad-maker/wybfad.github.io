@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>太阳系八大行星与月球 - 闪烁星光背景</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      font-family: 'Arial', sans-serif;
+    }
+
+    #info {
+      position: absolute;
+      top: 10px;
+      left: 20px;
+      color: rgba(255, 255, 255, 0.8);
+      background: rgba(0, 0, 0, 0.5);
+      padding: 5px 15px;
+      border-radius: 20px;
+      pointer-events: none;
+      z-index: 100;
+      font-size: 14px;
+      backdrop-filter: blur(5px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    #instructions {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 12px;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 4px 12px;
+      border-radius: 16px;
+      pointer-events: none;
+      z-index: 100;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="info">🌌 太阳系模拟 | 行星轨道 + 月球绕地球 | 星光闪烁微移</div>
+  <div id="instructions">鼠标拖动旋转视角 | 滚轮缩放</div>
+
+  <!-- 引入 Three.js 核心库和扩展控件 -->
+  <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.128.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.128.0/examples/jsm/"
+            }
+        }
+    </script>
+
+  <script type="module">
+    import * as THREE from 'three';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+    import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+    import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+    import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+
+    // --- 初始化场景、相机、渲染器 ---
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x050510); // 深空蓝黑底色
+
+    const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.set(0, 30, 80); // 初始视角俯视
+    camera.lookAt(0, 0, 0);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.shadowMap.enabled = false; // 本场景无需阴影，提高性能
+    renderer.toneMapping = THREE.ReinhardToneMapping;
+    document.body.appendChild(renderer.domElement);
+
+    // --- 控制器 (允许用户自由观察) ---
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.05;
+    controls.autoRotate = false;
+    controls.enableZoom = true;
+    controls.maxDistance = 200;
+    controls.minDistance = 20;
+    controls.target.set(0, 0, 0);
+
+    // --- 简单的后期处理，让星星和太阳有点发光效果 (可选，增强视觉) ---
+    const renderScene = new RenderPass(scene, camera);
+    const bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 1.5, 0.4, 0.85);
+    bloomPass.threshold = 0.1;
+    bloomPass.strength = 0.8;
+    bloomPass.radius = 0.5;
+
+    const composer = new EffectComposer(renderer);
+    composer.addPass(renderScene);
+    composer.addPass(bloomPass);
+
+    // --- 环境光与点光源 ---
+    // 环境光提供基础照明
+    const ambientLight = new THREE.AmbientLight(0x404060);
+    scene.add(ambientLight);
+
+    // 太阳本身会发光，但为了照亮行星，在太阳位置加一个强点光源
+    const sunLight = new THREE.PointLight(0xffeedd, 2, 0, 0);
+    sunLight.position.set(0, 0, 0);
+    scene.add(sunLight);
+
+    // 额外补充一些平行光让行星细节可见
+    const dirLight = new THREE.DirectionalLight(0xffffff, 0.5);
+    dirLight.position.set(1, 1, 1);
+    scene.add(dirLight);
+
+    // --- 创建星空背景 (粒子系统，带闪烁和微移) ---
+    // 生成 3000 颗星星，分布在半径 150 的球体内，但避免靠近中心区域，主要在外围
+    const starGeometry = new THREE.BufferGeometry();
+    const starCount = 4000;
+    const positions = new Float32Array(starCount * 3);
+    const colors = new Float32Array(starCount * 3); // 星星颜色略微不同
+
+    for (let i = 0; i < starCount; i++) {
+      // 使用球面分布，半径范围 80 到 200，让星星散布在远处
+      const radius = 80 + Math.random() * 120;
+      const theta = Math.random() * Math.PI * 2;
+      const phi = Math.acos((Math.random() * 2) - 1); // 球面均匀分布
+
+      const x = radius * Math.sin(phi) * Math.cos(theta);
+      const y = radius * Math.sin(phi) * Math.sin(theta);
+      const z = radius * Math.cos(phi);
+
+      positions[i * 3] = x;
+      positions[i * 3 + 1] = y;
+      positions[i * 3 + 2] = z;
+
+      // 颜色：偏白略带蓝/黄
+      const colorVal = 0.8 + Math.random() * 0.4;
+      const tint = Math.random();
+      if (tint < 0.7) {
+        colors[i * 3] = colorVal;
+        colors[i * 3 + 1] = colorVal * (0.9 + Math.random() * 0.1);
+        colors[i * 3 + 2] = colorVal * (0.9 + Math.random() * 0.1);
+      } else if (tint < 0.85) {
+        // 淡蓝
+        colors[i * 3] = 0.7;
+        colors[i * 3 + 1] = 0.8;
+        colors[i * 3 + 2] = 1.0;
+      } else {
+        // 淡黄
+        colors[i * 3] = 1.0;
+        colors[i * 3 + 1] = 0.9;
+        colors[i * 3 + 2] = 0.7;
+      }
+    }
+
+    starGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    starGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+    // 创建圆形粒子纹理
+    const createStarTexture = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = 32;
+      canvas.height = 32;
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, 32, 32);
+
+      // 绘制发光圆点
+      const gradient = ctx.createRadialGradient(16, 16, 0, 16, 16, 16);
+      gradient.addColorStop(0, 'rgba(255,255,255,1)');
+      gradient.addColorStop(0.4, 'rgba(255,255,200,0.8)');
+      gradient.addColorStop(0.6, 'rgba(200,220,255,0.3)');
+      gradient.addColorStop(1, 'rgba(255,255,255,0)');
+
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, 32, 32);
+
+      // 边缘柔和
+      return new THREE.CanvasTexture(canvas);
+    };
+
+    const starMaterial = new THREE.PointsMaterial({
+      size: 0.6,
+      map: createStarTexture(),
+      vertexColors: true,
+      transparent: true,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+      sizeAttenuation: true
+    });
+
+    const stars = new THREE.Points(starGeometry, starMaterial);
+    scene.add(stars);
+
+    // 存储星星初始位置用于微移计算
+    const initialStarPositions = positions.slice();
+
+    // --- 辅助元素: 微弱的银河背景雾效 (可选) ---
+    scene.fog = new THREE.FogExp2(0x050510, 0.002);
+
+    // --- 创建太阳 (发光球体) ---
+    const sunGeometry = new THREE.SphereGeometry(3.5, 64, 64);
+    const sunMaterial = new THREE.MeshStandardMaterial({
+      color: 0xffaa33,
+      emissive: 0xff5500,
+      roughness: 0.2,
+      emissiveIntensity: 2.5
+    });
+    const sun = new THREE.Mesh(sunGeometry, sunMaterial);
+    scene.add(sun);
+
+    // 太阳光晕效果: 添加一个小一点的高亮核心
+    const sunCoreGeo = new THREE.SphereGeometry(3.2, 32, 32);
+    const sunCoreMat = new THREE.MeshBasicMaterial({ color: 0xffdd99, transparent: true, opacity: 0.7 });
+    const sunCore = new THREE.Mesh(sunCoreGeo, sunCoreMat);
+    sun.add(sunCore);
+
+    // 太阳周围加一层粒子光晕 (使用点云)
+    const glowParticlesGeo = new THREE.BufferGeometry();
+    const glowCount = 200;
+    const glowPos = new Float32Array(glowCount * 3);
+    for (let i = 0; i < glowCount; i++) {
+      const r = 4.0 + Math.random() * 1.5;
+      const theta = Math.random() * Math.PI * 2;
+      const phi = Math.acos((Math.random() * 2) - 1);
+      glowPos[i * 3] = r * Math.sin(phi) * Math.cos(theta);
+      glowPos[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
+      glowPos[i * 3 + 2] = r * Math.cos(phi);
+    }
+    glowParticlesGeo.setAttribute('position', new THREE.BufferAttribute(glowPos, 3));
+    const glowParticlesMat = new THREE.PointsMaterial({
+      color: 0xffaa44,
+      size: 0.15,
+      blending: THREE.AdditiveBlending,
+      transparent: true,
+      opacity: 0.6,
+      map: createStarTexture()
+    });
+    const glowParticles = new THREE.Points(glowParticlesGeo, glowParticlesMat);
+    sun.add(glowParticles); // 添加到太阳使其跟随旋转
+
+    // --- 行星数据定义 ---
+    // 为了视觉效果，大小和距离不按真实比例，而是艺术缩放
+    const planetsInfo = [
+      { name: '水星', color: 0xaaaaaa, size: 0.6, distance: 6, speed: 0.02 },
+      { name: '金星', color: 0xffcc88, size: 0.8, distance: 9, speed: 0.015 },
+      { name: '地球', color: 0x2288ff, size: 0.9, distance: 12, speed: 0.012 },
+      { name: '火星', color: 0xff6633, size: 0.7, distance: 15, speed: 0.01 },
+      { name: '木星', color: 0xddbb99, size: 1.6, distance: 19, speed: 0.007 },
+      { name: '土星', color: 0xeeddbb, size: 1.4, distance: 24, speed: 0.0055, hasRing: true },
+      { name: '天王星', color: 0x88ccff, size: 1.2, distance: 30, speed: 0.004 },
+      { name: '海王星', color: 0x3366cc, size: 1.2, distance: 35, speed: 0.003 }
+    ];
+
+    // 存储行星对象的数组，用于动画
+    const planets = [];
+
+    // 辅助函数：创建轨道线
+    function createOrbit (radius, color = 0x555555) {
+      const points = [];
+      const segments = 128;
+      for (let i = 0; i <= segments; i++) {
+        const angle = (i / segments) * Math.PI * 2;
+        const x = radius * Math.cos(angle);
+        const z = radius * Math.sin(angle);
+        points.push(new THREE.Vector3(x, 0, z));
+      }
+      const geometry = new THREE.BufferGeometry().setFromPoints(points);
+      const material = new THREE.LineBasicMaterial({ color: color });
+      const orbitLine = new THREE.LineLoop(geometry, material);
+      return orbitLine;
+    }
+
+    // 创建所有行星轨道 (淡灰色，半透明感觉)
+    planetsInfo.forEach(info => {
+      const orbit = createOrbit(info.distance, 0x88aaff);
+      orbit.material.transparent = true;
+      orbit.material.opacity = 0.3;
+      scene.add(orbit);
+    });
+
+    // 额外添加一个微弱的坐标网格 (装饰)
+    const gridHelper = new THREE.GridHelper(80, 40, 0x4466aa, 0x224477);
+    gridHelper.position.y = -2;
+    gridHelper.material.opacity = 0.15;
+    gridHelper.material.transparent = true;
+    scene.add(gridHelper);
+
+    // 创建行星
+    planetsInfo.forEach(info => {
+      // 行星球体
+      const geo = new THREE.SphereGeometry(info.size, 32, 32);
+      const mat = new THREE.MeshStandardMaterial({
+        color: info.color,
+        emissive: 0x000000,
+        roughness: 0.4,
+        metalness: 0.1
+      });
+      const planet = new THREE.Mesh(geo, mat);
+
+      // 随机初始角度
+      const initAngle = Math.random() * Math.PI * 2;
+      planet.position.x = info.distance * Math.cos(initAngle);
+      planet.position.z = info.distance * Math.sin(initAngle);
+
+      // 存储自定义属性用于动画
+      planet.userData = {
+        distance: info.distance,
+        speed: info.speed,
+        angle: initAngle,
+        name: info.name
+      };
+
+      scene.add(planet);
+
+      // 如果是土星，添加光环
+      if (info.hasRing) {
+        const ringGeo = new THREE.TorusGeometry(info.size * 1.8, 0.3, 16, 100);
+        const ringMat = new THREE.MeshStandardMaterial({
+          color: 0xc2b280,
+          emissive: 0x000000,
+          side: THREE.DoubleSide,
+          transparent: true,
+          opacity: 0.6
+        });
+        const ring = new THREE.Mesh(ringGeo, ringMat);
+        ring.rotation.x = Math.PI / 2; // 使环平躺
+        ring.rotation.z = 0.3; // 稍微倾斜一点
+        planet.add(ring); // 添加到行星上，随行星移动
+      }
+
+      planets.push(planet);
+
+      // 如果是地球，添加月球
+      if (info.name === '地球') {
+        // 月球轨道 (绕地球)
+        const moonOrbitRadius = 2.8;
+        const moonOrbit = createOrbit(moonOrbitRadius, 0xcccccc);
+        moonOrbit.position.copy(planet.position); // 轨道跟随地球，但需要更新位置，所以单独处理
+        moonOrbit.userData = { parentPlanet: planet, radius: moonOrbitRadius };
+        // 不能直接添加到地球，因为地球旋转时我们希望轨道跟随，但月球轨道应该始终以地球为中心且不随地球自转改变方向
+        // 这里我们将月球轨道作为一个独立对象，并在每帧更新其位置为地球位置
+        scene.add(moonOrbit);
+
+        // 创建月球
+        const moonGeo = new THREE.SphereGeometry(0.4, 16, 16);
+        const moonMat = new THREE.MeshStandardMaterial({ color: 0xdddddd, roughness: 0.8 });
+        const moon = new THREE.Mesh(moonGeo, moonMat);
+        const moonAngle = Math.random() * Math.PI * 2;
+        moon.position.x = planet.position.x + moonOrbitRadius * Math.cos(moonAngle);
+        moon.position.z = planet.position.z + moonOrbitRadius * Math.sin(moonAngle);
+        moon.userData = {
+          parentPlanet: planet,
+          distance: moonOrbitRadius,
+          speed: 0.08, // 月球公转速度
+          angle: moonAngle
+        };
+        scene.add(moon);
+
+        // 存储月球引用以便动画
+        planets.push(moon); // 临时把月球也放进planets数组方便统一更新？但它的更新方式不同，我们单独处理
+        // 更好的方式：单独数组
+        if (!window.moons) window.moons = [];
+        window.moons = [moon]; // 但为了整洁，我们将在动画循环中处理
+        // 这里把月球存储到地球的userData中
+        planet.userData.moon = moon;
+        planet.userData.moonOrbit = moonOrbit;
+        planet.userData.moonOrbitRadius = moonOrbitRadius;
+      }
+    });
+
+    // 收集月球引用 (如果有)
+    const moonList = [];
+    planets.forEach(p => {
+      if (p.userData.name === '地球' && p.userData.moon) {
+        moonList.push(p.userData.moon);
+      }
+    });
+
+    // --- 星光闪烁和微移动画所需数据 ---
+    // 为每颗星星存储一个随机相位和初始位置偏移系数
+    const starPhases = new Array(starCount).fill(0).map(() => Math.random() * Math.PI * 2);
+    const starMoveSpeeds = new Array(starCount).fill(0).map(() => 0.1 + Math.random() * 0.3);
+    const starMoveAmplitudes = new Array(starCount).fill(0).map(() => 0.15 + Math.random() * 0.25);
+
+    // --- 动画循环 & 时间 ---
+    let clock = new THREE.Clock();
+
+    function animate () {
+      const delta = clock.getDelta();
+      const elapsedTime = performance.now() / 1000; // seconds
+
+      // 更新行星位置
+      planets.forEach(planet => {
+        // 跳过月球 (月球单独处理)
+        if (planet.userData.name === '地球' && planet.userData.moon) {
+          // 地球本身更新
+          const data = planet.userData;
+          data.angle += data.speed * delta * 5; // 乘系数调整速度使其视觉合适
+          planet.position.x = data.distance * Math.cos(data.angle);
+          planet.position.z = data.distance * Math.sin(data.angle);
+
+          // 更新月球位置
+          const moon = data.moon;
+          const moonOrbit = data.moonOrbit;
+          const moonData = moon.userData;
+          if (moonData) {
+            moonData.angle += moonData.speed * delta * 8;
+            // 月球相对地球的位置
+            const moonX = data.distance * Math.cos(data.angle) + moonData.distance * Math.cos(moonData.angle);
+            const moonZ = data.distance * Math.sin(data.angle) + moonData.distance * Math.sin(moonData.angle);
+            moon.position.x = moonX;
+            moon.position.z = moonZ;
+
+            // 更新月球轨道线位置 (使其中心在地球)
+            if (moonOrbit) {
+              moonOrbit.position.x = planet.position.x;
+              moonOrbit.position.z = planet.position.z;
+            }
+          }
+        } else if (!planet.userData.name) {
+          // 可能是月球本身已经在上面处理了，这里跳过
+        } else {
+          // 其他行星
+          const data = planet.userData;
+          if (data) {
+            data.angle += data.speed * delta * 5;
+            planet.position.x = data.distance * Math.cos(data.angle);
+            planet.position.z = data.distance * Math.sin(data.angle);
+          }
+        }
+      });
+
+      // 更新星星：闪烁和微移
+      // 闪烁：通过改变粒子大小和透明度实现 (使用material的opacity无法单独控制，所以使用size或颜色强度)
+      // 简单方法：改变粒子系统整体透明度？不行，需要个体差异。更好的：在shader中实现，但为了简洁，我们动态更新每个粒子的颜色属性来实现亮度变化。
+      // 但这需要更新geometry attribute，性能消耗大。所以这里采用一个近似：让整个粒子系统的透明度随时间微变，并额外移动位置。
+      // 但为了达到“微微随机移动”，我们可以更新每个粒子的位置。
+
+      // 方案：更新星星位置做微小扰动 (基于初始位置的正弦波动)
+      const positionsAttribute = starGeometry.attributes.position;
+      const positionArray = positionsAttribute.array;
+
+      for (let i = 0; i < starCount; i++) {
+        const ix = i * 3;
+        const iy = i * 3 + 1;
+        const iz = i * 3 + 2;
+
+        // 获取初始位置
+        const initX = initialStarPositions[ix];
+        const initY = initialStarPositions[iy];
+        const initZ = initialStarPositions[iz];
+
+        // 使用时间和随机相位生成偏移量
+        const phase = starPhases[i];
+        const speed = starMoveSpeeds[i];
+        const amp = starMoveAmplitudes[i];
+
+        // 在三个方向上的偏移稍微不同，产生随机游走效果
+        const offsetX = Math.sin(elapsedTime * speed + phase) * amp * 0.7;
+        const offsetY = Math.cos(elapsedTime * speed * 0.8 + phase * 2) * amp * 0.6;
+        const offsetZ = Math.sin(elapsedTime * speed * 1.2 + phase * 3) * amp * 0.8;
+
+        positionArray[ix] = initX + offsetX;
+        positionArray[iy] = initY + offsetY;
+        positionArray[iz] = initZ + offsetZ;
+      }
+
+      // 通知Three.js位置已更新
+      positionsAttribute.needsUpdate = true;
+
+      // 闪烁效果：通过调整粒子系统整体透明度，并结合个体颜色亮度？这里简单改变粒子大小，营造呼吸感
+      // 但为了个体差异，更好的方法是修改颜色，但为了性能我们接受整体微调。
+      // 额外加一个整体的透明度波动，看起来像集体闪烁
+      starMaterial.opacity = 0.7 + Math.sin(elapsedTime * 3) * 0.2;
+
+      // 太阳自转 (可选)
+      sun.rotation.y += 0.001;
+
+      // 更新控制器
+      controls.update();
+
+      // 使用composer渲染
+      composer.render();
+
+      requestAnimationFrame(animate);
+    }
+
+    animate();
+
+    // --- 窗口自适应 ---
+    window.addEventListener('resize', onWindowResize, false);
+    function onWindowResize () {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      composer.setSize(window.innerWidth, window.innerHeight);
+    }
+
+    // 添加一点额外的射线装饰，让太阳更有光芒 (可选)
+    const lensflare = (() => {
+      // 简单的十字光芒
+      const geometry = new THREE.BufferGeometry();
+      const vertices = [];
+      for (let i = 0; i < 8; i++) {
+        const angle = (i / 8) * Math.PI * 2;
+        const len = 7;
+        vertices.push(0, 0, 0);
+        vertices.push(Math.cos(angle) * len, Math.sin(angle) * len, 0);
+      }
+      geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+      const material = new THREE.LineBasicMaterial({ color: 0xffaa33, transparent: true, opacity: 0.15 });
+      const lines = new THREE.LineSegments(geometry, material);
+      sun.add(lines);
+    })();
+
+    console.log('模拟启动完成！');
+  </script>
+</body>
+
+</html>

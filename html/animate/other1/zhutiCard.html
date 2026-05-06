@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>现代极简卧室套装</title>
+  <!-- <link rel="stylesheet" href="css/zhutiCard.css"> -->
+  <style type="text/css">
+    /* @import url('css/zhutiCard.css'); */
+    body {
+      font-family: "Roboto Serif", serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 0;
+      min-height: 100vh;
+      background-color: #f6f1ea;
+      background-image: radial-gradient(circle at 15%20%, rgba(232, 186, 142, 0.35) 0%, rgba(232, 186, 142, 0.18) 20%, rgba(232, 186, 142, 0.08) 35%, transparent 60%), radial-gradient(circle at 85%75%, rgba(220, 160, 110, 0.35) 0%, rgba(220, 160, 110, 0.15) 25%, transparent 55%), radial-gradient(circle at 60%10%, rgba(255, 210, 170, 0.25) 0%, transparent 50%);
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 10;
+      mix-blend-mode: saturation;
+      background: radial-gradient(circle at 20%25%, rgba(255, 200, 150, 0.35), rgba(255, 200, 150, 0.15) 30%, transparent 60%), radial-gradient(circle at 80%70%, rgba(255, 170, 110, 0.3), transparent 60%);
+      filter: blur(80px);
+    }
+
+    .product-card {
+      border-radius: 12rem;
+      corner-shape: squircle;
+      padding: 1rem1.5rem1rem1rem;
+      max-width: 800px;
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.75), rgba(255, 255, 255, 0.55));
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      box-shadow: 040px80pxrgba(206, 168, 132, 0.1), 020px40pxrgba(0, 0, 0, 0.1), 00120pxrgba(198, 169, 126, 0.25), inset 01px0rgba(255, 255, 255, 0.6), -5px -5px10px0#fffce9;
+
+      .card-content {
+        display: flex;
+        justify-content: center;
+        gap: 32px;
+      }
+
+      .image-container {
+        position: relative;
+        border-radius: 12rem;
+        width: 45vw;
+        max-width: 450px;
+        corner-shape: squircle;
+        aspect-ratio: 1/1;
+        overflow: hidden;
+      }
+    }
+
+    @media (max-width:768px) {
+      .product-card {
+        border-radius: 5rem;
+
+        .card-content {
+          flex-direction: column;
+        }
+
+        .image-container {
+          width: 100%;
+          border-radius: 5rem;
+        }
+
+        .info-container {
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          color: #5f5a55;
+
+          .brand {
+            display: block;
+            padding-bottom: 3rem;
+            font-size: 0.85rem;
+          }
+
+          h1 {
+            line-height: 100%;
+            font-size: 2rem;
+            font-weight: 600;
+            letter-spacing: -0.1rem;
+            margin: 0;
+            padding: 0;
+            transform: scaleY(2);
+          }
+
+          .price {
+            font-size: 1.3rem;
+            font-weight: 400;
+            margin: 0;
+            padding: 2.5rem00;
+            color: #c89b5e;
+          }
+
+          .description {
+            max-width: 280px;
+            font-size: 0.85rem;
+            font-weight: 200;
+            line-height: 150%;
+            margin: 0;
+            padding: 1rem0;
+          }
+
+          .btn-primary {
+            margin-top: 1rem;
+            padding: 1rem2rem;
+            max-width: 200px;
+            font-size: 1rem;
+            letter-spacing: 1px;
+            color: #ffffff;
+            background: linear-gradient(145deg, #d8a45c, #b97a2f);
+            border: none;
+            border-radius: 40px;
+            cursor: pointer;
+            box-shadow: 08px20pxrgba(201, 155, 94, 0.35), 0025pxrgba(201, 155, 94, 0.15), inset 02px6pxrgba(255, 255, 255, 0.3);
+            transition: 0.3s ease;
+          }
+
+          .btn-primary:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.05);
+            box-shadow: 010px25pxrgba(185, 122, 47, 0.45), inset 02px6pxrgba(255, 255, 255, 0.3);
+          }
+
+          .btn-primary:active {
+            transform: translateY(1px);
+            box-shadow: 05px15pxrgba(185, 122, 47, 0.3), inset 03px6pxrgba(0, 0, 0, 0.15);
+          }
+
+        }
+      }
+    }
+
+    @media (max-width:768px) {
+      .product-card {
+        .info-container {
+          .btn-primary {
+            max-width: none;
+          }
+        }
+      }
+    }
+
+    .image {
+      aspect-ratio: 1/1;
+      width: 100%;
+      background: url("https://assets.codepen.io/662051/Gemini_Generated_Image_j4wi73j4wi73j4wi.png") center;
+      background-size: cover;
+      transition: 0.4s ease;
+    }
+
+    .theme-switch__input:checked~.image {
+      background-image: url("https://assets.codepen.io/662051/Gemini_Generated_Image_2q32sc2q32sc2q32.png");
+    }
+
+    .theme-switch {
+      position: absolute;
+      left: 50%;
+      bottom: 20px;
+      transform: translateX(-50%);
+      cursor: pointer;
+    }
+
+    .theme-switch__input {
+      display: none;
+    }
+
+    .theme-switch__container {
+      position: relative;
+      width: 60px;
+      height: 32px;
+      padding: 5px;
+      background-color: #e2e2e2;
+      border-radius: 32px;
+      display: flex;
+      align-items: center;
+      box-shadow: inset 02px5pxrgba(0, 0, 0, 0.1);
+      transition: all 0.4scubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .theme-switch__circle {
+      width: 30px;
+      height: 30px;
+      background-color: #333;
+      border-radius: 50%;
+      z-index: 2;
+      box-shadow: 02px10pxrgba(0, 0, 0, 0.2);
+      transition: all 0.4scubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .theme-switch__icons {
+      position: absolute;
+      width: 100%;
+      box-sizing: border-box;
+      z-index: 2;
+
+      .icon {
+        width: 18px;
+        height: 18px;
+        transition: opacity 0.3s ease;
+      }
+
+      .icon--sun {
+        opacity: 1;
+        color: #fff;
+        transform: translate(6px, 2px);
+      }
+
+      .icon--moon {
+        opacity: 0;
+        color: #333;
+        transform: translate(15px, 2px);
+      }
+    }
+
+    .theme-switch__input:checked+.image+.theme-switch {
+      .theme-switch__container {
+        background-color: #222;
+      }
+
+      .theme-switch__circle {
+        transform: translateX(30px);
+        background-color: #fff;
+      }
+
+      .icon--sun {
+        opacity: 0;
+      }
+
+      .icon--moon {
+        opacity: 1;
+        color: #333;
+      }
+    }
+
+    #dev {
+      font-family: "Montserrat", sans-serif;
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      padding: 1em;
+      font-size: 14px;
+      color: #333;
+      background-color: white;
+      border-radius: 25px;
+      cursor: pointer;
+    }
+
+    #deva {
+      text-decoration: none;
+      font-weight: bold;
+      color: #333;
+      transition: all 0.4s ease;
+    }
+
+    #deva:hover {
+      color: #ef5350;
+      text-decoration: underline;
+    }
+
+    #devspan {
+      display: inline-block;
+      color: pink;
+      transition: all 0.4s ease;
+    }
+
+    #devspan:hover {
+      transform: scale(1.2);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="product-card">
+    <div class="card-content">
+      <div class="image-container">
+        <input type="checkbox" id="theme-toggle" class="theme-switch__input">
+        <div class="image"></div>
+        <label for="theme-toggle" class="theme-switch">
+          <div class="theme-switch__container">
+            <div class="theme-switch__circle"></div>
+            <div class="theme-switch__icons">
+              <svg class="icon icon--sun" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="5"></circle>
+                <line x1="12" y1="1" x2="12" y2="3"></line>
+                <line x1="12" y1="21" x2="12" y2="23"></line>
+                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                <line x1="1" y1="12" x2="3" y2="12"></line>
+                <line x1="21" y1="12" x2="23" y2="12"></line>
+                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+              </svg>
+              <svg class="icon icon--moon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3                        7 7 0 0 0 21
+                  12.79z"></path>
+              </svg>
+            </div>
+          </div>
+        </label>
+      </div>
+      <div class="info-container">
+        <header>
+          <span class="brand">HOLIME</span>
+          <h1 class="title">现代极简<br />卧室套装</h1>
+          <p class="price">$50.00 <span>起</span></p>
+          <p class="description">
+            打造宁静休憩空间，这套现代极简卧室套装融合永恒设计与舒适体验，为您的家注入优雅与安宁。
+          </p>
+          <p class="link">https://mp.weixin.qq.com/s/a7A7gHvWCbnaHxLf0DDy1g</p>
+        </header>
+        <button class="btn-primary">加入购物车</button>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>

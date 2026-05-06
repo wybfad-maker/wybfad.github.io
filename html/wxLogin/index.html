@@ -177,6 +177,44 @@
           /* 左下 - 直角 */
           0% 100%, 0% 80%);
     }
+
+    button {
+      padding: 10px 20px;
+      margin: 10px 0;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+
+      &:hover {
+        background-color: #3e8e41;
+        box-shadow: 0 0 10px #3e8e41;
+      }
+    }
+
+    .dialog_win {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: #f2f2f2;
+      /* background-color: #fff; */
+      border-radius: 10px;
+      border: none;
+      padding: 20px;
+      z-index: 1000;
+      box-shadow: 0 0 10px #888888;
+
+      .dialog_container {
+        display: flex;
+        justify-items: center;
+        align-items: center;
+        flex-direction: column;
+        gap: 10px;
+      }
+    }
   </style>
 </head>
 
@@ -197,7 +235,7 @@
       <div class="flex flex-direction-column align-items-center justify-content-center">
         <p>{{userName}}</p>
         <button class="login_btn" @click="logout">Logout</button>
-        <p><input class="fileIpt" type="file" v-model="defFile" @change="openFile"></p>
+        <p><input class="fileIpt" type="file" :value="defFile" @change="openFile"></p>
         <p><a :href="avatarUrl" download>下载</a></p>
       </div>
     </div>
@@ -206,6 +244,27 @@
     </div>
     <!-- <Toast v-if="showToast" :text="toastText" /> -->
     <div class="toast" v-if="showToast">{{toastText}}</div>
+    <div class="popover_area">
+      <button popovertarget="menu">打开菜单</button>
+      <div popover id="menu" class="dialog_win">
+        <div class="dialog_container">
+          <ul>
+            <li>选项一</li>
+            <li>选项二</li>
+            <li>选项三</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="dialog_area">
+      <button popovertarget="tip">提示</button>
+      <dialog popover id="tip" class="dialog_win">
+        <div class="dialog_container">
+          <h2>提示</h2>
+          <p>这是一个带有dialog角色的弹出层，屏幕阅读器会正确识别。</p>
+        </div>
+      </dialog>
+    </div>
   </div>
   <script type="module">
     // import wyb from './wx.js';

@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>在线电子签名工具</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 800px;
+      width: 100%;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      padding: 30px;
+      margin-top: 20px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    h1 {
+      color: #2c3e50;
+      margin-bottom: 10px;
+      font-size: 2.2rem;
+    }
+
+    .subtitle {
+      color: #7f8c8d;
+      font-size: 1.1rem;
+    }
+
+    .signature-area {
+      border: 2px dashed #bdc3c7;
+      border-radius: 10px;
+      margin-bottom: 25px;
+      position: relative;
+      background-color: #f9f9f9;
+      overflow: hidden;
+    }
+
+    #signatureCanvas {
+      width: 100%;
+      height: 300px;
+      display: block;
+      cursor: crosshair;
+      background-color: white;
+    }
+
+    .canvas-placeholder {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #95a5a6;
+      font-size: 1.2rem;
+      pointer-events: none;
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin-bottom: 25px;
+    }
+
+    .btn {
+      padding: 12px 20px;
+      border: none;
+      border-radius: 6px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-clear {
+      background-color: #e74c3c;
+      color: white;
+    }
+
+    .btn-save {
+      background-color: #2ecc71;
+      color: white;
+    }
+
+    .btn-download {
+      background-color: #3498db;
+      color: white;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    .btn-clear:hover {
+      background-color: #c0392b;
+    }
+
+    .btn-save:hover {
+      background-color: #27ae60;
+    }
+
+    .btn-download:hover {
+      background-color: #2980b9;
+    }
+
+    .color-picker {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .color-option {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: transform 0.2s;
+    }
+
+    .color-option:hover {
+      transform: scale(1.1);
+    }
+
+    .color-option.active {
+      border-color: #2c3e50;
+      transform: scale(1.1);
+    }
+
+    .line-width {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .line-width input {
+      width: 100%;
+    }
+
+    .signature-preview {
+      margin-top: 30px;
+      text-align: center;
+    }
+
+    .preview-title {
+      margin-bottom: 15px;
+      color: #2c3e50;
+    }
+
+    #signaturePreview {
+      max-width: 100%;
+      border: 1px solid #bdc3c7;
+      border-radius: 5px;
+      display: none;
+    }
+
+    footer {
+      margin-top: 30px;
+      text-align: center;
+      color: #7f8c8d;
+      font-size: 0.9rem;
+    }
+
+    @media (max-width:600px) {
+      .container {
+        padding: 20px;
+      }
+
+      h1 {
+        font-size: 1.8rem;
+      }
+
+      .controls {
+        flex-direction: column;
+      }
+
+      .btn {
+        width: 100%;
+      }
+    }
+
+    .instructions {
+      background-color: #f8f9fa;
+      border-left: 4px solid #3498db;
+      padding: 15px;
+      margin-bottom: 25px;
+      border-radius: 0 8px 8px 0;
+    }
+
+    .instructions h3 {
+      color: #2c3e50;
+      margin-bottom: 10px;
+    }
+
+    .instructions ul {
+      padding-left: 20px;
+    }
+
+    .instructions li {
+      margin-bottom: 8px;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>在线电子签名工具</h1>
+    <p class="subtitle">使用鼠标或触摸屏创建您的电子签名</p>
+  </header>
+
+  <div class="container">
+    <div class="instructions">
+      <h3>使用说明</h3>
+      <ul>
+        <li>在下方画布区域使用鼠标或手指（触摸屏设备）绘制您的签名</li>
+        <li>可以使用下方的颜色和线条粗细选项调整签名样式</li>
+        <li>完成后可以保存签名或下载为PNG图片</li>
+        <li>如需重新开始，请点击"清除签名"按钮</li>
+      </ul>
+    </div>
+
+    <div class="signature-area">
+      <canvas id="signatureCanvas"></canvas>
+      <div class="canvas-placeholder">请在此处绘制您的签名</div>
+    </div>
+
+    <div class="color-picker">
+      <span>选择颜色：</span>
+      <div class="color-option active" style="background-color: #000000;" data-color="#000000"></div>
+      <div class="color-option" style="background-color: #e74c3c;" data-color="#e74c3c"></div>
+      <div class="color-option" style="background-color: #3498db;" data-color="#3498db"></div>
+      <div class="color-option" style="background-color: #2ecc71;" data-color="#2ecc71"></div>
+      <div class="color-option" style="background-color: #f39c12;" data-color="#f39c12"></div>
+    </div>
+
+    <div class="line-width">
+      <span>线条粗细：</span>
+      <input type="range" id="lineWidth" min="1" max="10" value="2">
+      <span id="widthValue">2px</span>
+    </div>
+
+    <div class="controls">
+      <button class="btn btn-clear" id="clearBtn">
+        <svg xmlns="http: //www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+
+          <path
+            d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z" />
+
+          <path fill-rule="evenodd"
+            d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z" />
+
+        </svg>
+        清除签名
+      </button>
+      <button class="btn btn-save" id="saveBtn">
+        <svg xmlns="http: //www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+
+          <path
+            d="M2 1a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H9.5a1 1 0 0 0-1 1v7.293l2.646-2.647a.5.5 0 0 1 .708.708l-3.5 3.5a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L7.5 9.293V2a2 2 0 0 1 2-2H14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h2.5a.5.5 0 0 1 0 1H2z" />
+
+        </svg>
+        保存签名
+      </button>
+      <button class="btn btn-download" id="downloadBtn">
+        <svg xmlns="http: //www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+
+          <path
+            d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z" />
+
+          <path
+            d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z" />
+
+        </svg>
+        下载签名
+      </button>
+    </div>
+
+    <div class="signature-preview">
+      <h3 class="preview-title">签名预览</h3>
+      <img id="signaturePreview" alt="签名预览">
+    </div>
+  </div>
+
+  <footer>
+    <p>© 2023 在线电子签名工具 | 使用HTML5 Canvas和JavaScript构建</p>
+  </footer>
+
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      // 获取Canvas元素和上下文
+      const canvas = document.getElementById('signatureCanvas');
+      const ctx = canvas.getContext('2d');
+      const placeholder = document.querySelector('.canvas-placeholder');
+
+      // 获取控制元素
+      const clearBtn = document.getElementById('clearBtn');
+      const saveBtn = document.getElementById('saveBtn');
+      const downloadBtn = document.getElementById('downloadBtn');
+      const colorOptions = document.querySelectorAll('.color-option');
+      const lineWidthInput = document.getElementById('lineWidth');
+      const widthValue = document.getElementById('widthValue');
+      const signaturePreview = document.getElementById('signaturePreview');
+
+      // 设置Canvas尺寸
+      function resizeCanvas () {
+        const container = canvas.parentElement;
+        canvas.width = container.clientWidth;
+        canvas.height = 300;
+
+        // 重新绘制内容（如果有）
+        redrawSignature();
+      }
+
+      // 初始化变量
+      let isDrawing = false;
+      let lastX = 0;
+      let lastY = 0;
+      let currentColor = '#000000';
+      let currentLineWidth = 2;
+      let signatureData = [];
+
+      // 初始化Canvas
+      resizeCanvas();
+      window.addEventListener('resize', resizeCanvas);
+
+      // 设置初始绘制样式
+      ctx.strokeStyle = currentColor;
+      ctx.lineWidth = currentLineWidth;
+      ctx.lineJoin = 'round';
+      ctx.lineCap = 'round';
+
+      // 颜色选择
+      colorOptions.forEach(option => {
+        option.addEventListener('click', function () {
+          // 移除所有active类
+          colorOptions.forEach(opt => opt.classList.remove('active'));
+          // 添加active类到当前选项
+          this.classList.add('active');
+          // 更新当前颜色
+          currentColor = this.getAttribute('data-color');
+          ctx.strokeStyle = currentColor;
+        });
+      });
+
+      // 线条粗细
+      lineWidthInput.addEventListener('input', function () {
+        currentLineWidth = this.value;
+        ctx.lineWidth = currentLineWidth;
+        widthValue.textContent = `${currentLineWidth}px`;
+      });
+
+      // 开始绘制
+      function startDrawing (e) {
+        isDrawing = true;
+        [lastX, lastY] = getCoordinates(e);
+        placeholder.style.display = 'none';
+
+        // 开始新的路径
+        signatureData.push([]);
+      }
+
+      // 绘制中
+      function draw (e) {
+        if (!isDrawing) return;
+
+        e.preventDefault();
+
+        const [x, y] = getCoordinates(e);
+
+        // 绘制到Canvas
+        ctx.beginPath();
+        ctx.moveTo(lastX, lastY);
+        ctx.lineTo(x, y);
+        ctx.stroke();
+
+        // 保存绘制数据
+        signatureData[signatureData.length - 1].push({ x, y });
+
+        [lastX, lastY] = [x, y];
+      }
+
+      // 结束绘制
+      function stopDrawing () {
+        isDrawing = false;
+      }
+
+      // 获取坐标（兼容鼠标和触摸事件）
+      function getCoordinates (e) {
+        let x, y;
+
+        if (e.type.includes('touch')) {
+          x = e.touches[0].clientX - canvas.getBoundingClientRect().left;
+          y = e.touches[0].clientY - canvas.getBoundingClientRect().top;
+        } else {
+          x = e.offsetX;
+          y = e.offsetY;
+        }
+
+        return [x, y];
+      }
+
+      // 重新绘制签名（用于Canvas尺寸调整后）
+      function redrawSignature () {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        if (signatureData.length === 0) {
+          placeholder.style.display = 'flex';
+          return;
+        }
+
+        ctx.beginPath();
+
+        signatureData.forEach(stroke => {
+          if (stroke.length > 0) {
+            ctx.moveTo(stroke[0].x, stroke[0].y);
+
+            for (let i = 1; i < stroke.length; i++) {
+              ctx.lineTo(stroke[i].x, stroke[i].y);
+            }
+          }
+        });
+
+        ctx.stroke();
+      }
+
+      // 清除签名
+      function clearSignature () {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        signatureData = [];
+        placeholder.style.display = 'flex';
+        signaturePreview.style.display = 'none';
+      }
+
+      // 保存签名预览
+      function saveSignature () {
+        if (signatureData.length === 0) {
+          alert('请先绘制签名！');
+          return;
+        }
+
+        const dataURL = canvas.toDataURL('image/png');
+        signaturePreview.src = dataURL;
+        signaturePreview.style.display = 'block';
+
+        // 平滑滚动到预览区域
+        signaturePreview.scrollIntoView({ behavior: 'smooth' });
+      }
+
+      // 下载签名
+      function downloadSignature () {
+        if (signatureData.length === 0) {
+          alert('请先绘制签名！');
+          return;
+        }
+
+        const dataURL = canvas.toDataURL('image/png');
+        const link = document.createElement('a');
+        link.download = '电子签名.png';
+        link.href = dataURL;
+        link.click();
+      }
+
+      // 事件监听器
+      canvas.addEventListener('mousedown', startDrawing);
+      canvas.addEventListener('mousemove', draw);
+      canvas.addEventListener('mouseup', stopDrawing);
+      canvas.addEventListener('mouseout', stopDrawing);
+
+      // 触摸事件支持
+      canvas.addEventListener('touchstart', startDrawing);
+      canvas.addEventListener('touchmove', draw);
+      canvas.addEventListener('touchend', stopDrawing);
+
+      clearBtn.addEventListener('click', clearSignature);
+      saveBtn.addEventListener('click', saveSignature);
+      downloadBtn.addEventListener('click', downloadSignature);
+
+      // 防止触摸设备上的滚动
+      canvas.addEventListener('touchmove', function (e) {
+        if (isDrawing) {
+          e.preventDefault();
+        }
+      }, { passive: false });
+    });
+  </script>
+</body>
+
+</html>

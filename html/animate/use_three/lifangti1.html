@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Three.js 粒子系统</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+    }
+
+    canvas {
+      display: block;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- 引入 Three.js 核心库和扩展控件 -->
+  <script type="importmap">
+    {
+        "imports": {
+            "three": "https://unpkg.com/three@0.128.0/build/three.module.js",
+            "three/addons/": "https://unpkg.com/three@0.128.0/examples/jsm/"
+        }
+    }
+  </script>
+  <script type="module">
+    // "gsap": "https://cdn.bootcdn.net/ajax/libs/gsap/3.13.0/gsap.min.js"
+    // 引入 Three.js
+    import * as THREE from 'three';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+    import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+    import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+    import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+
+    // 创建一个空的场景
+    const scene = new THREE.Scene();
+
+    // 创建一个透视相机
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.z = 50;
+
+    // 创建一个渲染器
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+
+    // 添加轨道控制器，方便交互
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.minZoom = 0.5;
+    controls.maxZoom = 20;
+    controls.minDistance = 5;
+    controls.maxDistance = 20;
+
+    // 创建粒子系统属性
+    const particleCount = 50000; // 粒子数量增加到50000以获得更密集的效果
+    const radius = 15; // 球体的半径
+    const speed = 0.005; // 粒子速度系数
+    const maxAge = 20; // 粒子的最大生命周期（秒）
+    const rotationSpeed = 0.005; // 旋转速度
+
+    // 创建粒子位置、速度、颜色和年龄数据
+    const positions = new Float32Array(particleCount * 3);
+    const velocities = new Float32Array(particleCount * 3);
+    const colors = new Float32Array(particleCount * 3);
+    const ages = [];
+
+    // 初始化粒子
+    for (let i = 0; i < particleCount; i++) {
+      // 生成螺旋状分布的粒子
+      const t = i / particleCount * Math.PI * 20; // 增加螺旋密度
+      const theta = t + Math.random() * 0.1; // 经度，增加一些随机性
+      const phi = Math.acos(2 * Math.random() - 1); // 纬度
+
+      // 螺旋半径随角度变化
+      const spiralRadius = radius * (0.5 + 0.5 * Math.sin(t * 0.5));
+
+      const x = spiralRadius * Math.sin(phi) * Math.cos(theta);
+      const y = spiralRadius * Math.sin(phi) * Math.sin(theta);
+      const z = spiralRadius * Math.cos(phi);
+
+      // 速度向量，结合螺旋运动
+      const vx = speed * (Math.sin(phi) * Math.cos(theta) + Math.cos(theta) * Math.cos(phi));
+      const vy = speed * (Math.sin(phi) * Math.sin(theta) + Math.sin(theta) * Math.cos(phi));
+      const vz = speed * (Math.cos(phi) - Math.sin(phi) * Math.sin(t * 0.1));
+
+      // 计算粒子颜色，使用红色和蓝色的渐变
+      const normalizedY = (y + radius) / (2 * radius); // 将y坐标归一化到0-1
+      let color;
+      if (normalizedY < 0.5) {
+        // 下半部分使用蓝色渐变
+        const blueIntensity = 0.5 + normalizedY * 1.0;
+        color = new THREE.Color(0, 0, blueIntensity);
+      } else {
+        // 上半部分使用红色渐变
+        const redIntensity = 0.5 + (normalizedY - 0.5) * 1.0;
+        color = new THREE.Color(redIntensity, 0, 0);
+      }
+
+      // 填充数组
+      positions.set([x, y, z], i * 3);
+      velocities.set([vx, vy, vz], i * 3);
+      colors.set([color.r, color.g, color.b], i * 3);
+      ages.push(Math.random() * maxAge); // 随机生成寿命
+    }
+
+    // 创建几何体
+    const geometry = new THREE.BufferGeometry();
+    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    geometry.setAttribute('velocity', new THREE.BufferAttribute(velocities, 3));
+    geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+    geometry.setAttribute('age', new THREE.BufferAttribute(new Float32Array(ages), 1)); // 添加寿命属性
+
+    // 创建材质，使用顶点颜色
+    const material = new THREE.ShaderMaterial({
+      uniforms: {
+        time: { type: 'f', value: 0 }, // 时间变量用于动画
+        maxAge: { type: 'f', value: maxAge }, // 粒子最大寿命
+        rotationSpeed: { type: 'f', value: rotationSpeed }, // 旋转速度
+      },
+      vertexShader: `
+    uniform float uTime;
+    uniform float uRotationSpeed;
+    attribute vec3 velocity;
+    attribute vec3 color;
+    attribute float age;
+    varying vec3 vColor;
+    void main() {
+      vColor = color; // 传递顶点颜色
+      
+      // 计算旋转矩阵
+      float angle = uTime * uRotationSpeed;
+      mat3 rotationMatrix = mat3(
+        cos(angle), 0.0, sin(angle),
+        0.0, 1.0, 0.0,
+        -sin(angle), 0.0, cos(angle)
+      );
+      
+      // 应用旋转和移动
+      vec3 rotatedPosition = rotationMatrix * position;
+      vec3 newPosition = rotatedPosition + velocity * uTime;
+      
+      float newAge = age - uTime; // 更新粒子寿命
+      if (newAge <= 0.0) {
+        // 粒子寿命结束，直接丢弃
+        discard;
+      }
+      
+      // 计算粒子大小，随距离变化
+      gl_PointSize = 1.0 + (30.0 / length(cameraPosition - newPosition));
+      gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
+    }
+  `,
+      fragmentShader: `
+    varying vec3 vColor;
+    void main() {
+      // 创建圆形粒子
+      float distance = length(gl_PointCoord - vec2(0.5));
+      if (distance > 0.5) discard;
+      
+      // 添加发光效果
+      float intensity = 1.0 - distance * 2.0;
+      gl_FragColor = vec4(vColor * intensity, 1.0);
+    }
+  `,
+      transparent: true,
+      blending: THREE.AdditiveBlending, // 使用 additive blending 增强发光效果
+      depthWrite: false, // 禁用深度写入以获得更好的叠加效果
+    });
+
+    // 创建粒子系统
+    const particleSystem = new THREE.Points(geometry, material);
+    scene.add(particleSystem);
+
+    // 添加背景
+    scene.background = new THREE.Color(0x000000); // 黑色背景
+
+    // 动画循环
+    function animate () {
+      requestAnimationFrame(animate);
+
+      // 更新时间
+      material.uniforms.time.value += 0.01; // 实现动画效果
+
+      // 缓慢旋转相机，增强视觉效果
+      camera.position.x = 30 * Math.sin(Date.now() * 0.0001);
+      camera.position.z = 30 * Math.cos(Date.now() * 0.0001);
+      camera.lookAt(0, 0, 0);
+
+      // 渲染
+      renderer.render(scene, camera);
+    }
+
+    animate();
+
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>赛博木鱼</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #121212;
+      color: #FFFFFF;
+      font-family: 'Kaiti SC', 'PingFang SC', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      overflow: hidden;
+    }
+
+    .title-container {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .main-title {
+      color: #FFFFFF;
+      font-size: 6vw;
+      font-family: 'Kaiti SC', sans-serif;
+      background: linear-gradient(180deg,
+          rgba(255, 176, 103, 0.05) 0%,
+          rgba(115, 55, 0, 0.02) 100%);
+      background-clip: text;
+      margin: 0;
+      line-height: 1;
+    }
+
+    .score-container {
+      text-align: center;
+      margin: 20px 0;
+    }
+
+    .score {
+      font-size: 10vh;
+      font-family: 'PingFang SC', sans-serif;
+      font-weight: 900;
+      margin: 0;
+    }
+
+    .description {
+      font-size: 5vh;
+      font-family: 'PingFang SC', sans-serif;
+      margin-top: 10px;
+    }
+
+    .wooden-fish-container {
+      position: relative;
+      width: 300px;
+      height: 250px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 30px 0;
+    }
+
+    .wooden-fish {
+      width: 284px;
+      height: 236px;
+      transition: transform 0.1s ease;
+    }
+
+    .mallet {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      width: 119px;
+      height: 69px;
+      transition: transform 0.1s ease;
+      z-index: 10;
+    }
+
+    .floating-text {
+      position: absolute;
+      top: -50px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: 'PingFang SC', sans-serif;
+      font-size: 1.5em;
+      color: #FFFFFF;
+      opacity: 0;
+      pointer-events: none;
+      animation: floatUp 0.4s ease-out forwards;
+    }
+
+    @keyframes floatUp {
+      0% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+
+      100% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-60px);
+      }
+    }
+
+    .bottom-text {
+      font-family: 'Kaiti SC', sans-serif;
+      font-size: 1.2em;
+      text-align: center;
+      margin-top: 30px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="title-container">
+    <div class="main-title">赛博木鱼</div>
+  </div>
+
+  <div class="score-container">
+    <div class="score" id="score">0</div>
+    <div class="description">功德</div>
+  </div>
+
+  <div class="wooden-fish-container" id="fishContainer">
+    <img src="https://img.alicdn.com/imgextra/i3/O1CN012CO0YU1VSfNs506ZS_!!6000000002652-2-tps-284-236.png" alt="木鱼"
+      class="wooden-fish" id="woodenFish">
+    <img src="https://img.alicdn.com/imgextra/i1/O1CN01tKb5Et1aSjWRjCHK3_!!6000000003329-2-tps-119-69.png" alt="锤子"
+      class="mallet" id="mallet">
+  </div>
+
+  <div class="bottom-text">轻敲木鱼，细悟赛博真经。</div>
+  <div class="bottom-text">https://mp.weixin.qq.com/s/-bQ9xlvuMmr82EBfZXRMHA</div>
+
+  <audio id="clickSound" preload="auto">
+
+    <source src="https://qianwen.alicdn.com/resource/qiaomuyu.mp3" type="audio/mpeg">
+
+  </audio>
+
+
+  <script>
+    let score = 0;
+    const scoreElement = document.getElementById('score');
+    const woodenFish = document.getElementById('woodenFish');
+    const mallet = document.getElementById('mallet');
+    const fishContainer = document.getElementById('fishContainer');
+    const clickSound = document.getElementById('clickSound');
+
+    fishContainer.addEventListener('click', function (e) {
+      // 播放音效
+      clickSound.currentTime = 0;
+      clickSound.play();
+
+      // 锤子旋转动画
+      mallet.style.transform = 'rotate(-25deg)';
+      setTimeout(() => {
+        mallet.style.transform = 'rotate(0deg)';
+      }, 100);
+
+      // 木鱼放大动画
+      woodenFish.style.transform = 'scale(1.1)';
+      setTimeout(() => {
+        woodenFish.style.transform = 'scale(1)';
+      }, 100);
+
+      // 增加分数
+      score++;
+      scoreElement.textContent = score;
+
+      // 创建漂浮文字
+      const floatingText = document.createElement('div');
+      floatingText.className = 'floating-text';
+      floatingText.textContent = '功德+1';
+      fishContainer.appendChild(floatingText);
+
+      // 移除漂浮文字
+      setTimeout(() => {
+        floatingText.remove();
+      }, 400);
+    });
+  </script>
+</body>
+
+</html>

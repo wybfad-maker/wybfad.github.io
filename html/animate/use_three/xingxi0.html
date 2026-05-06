@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>太阳系动画</title>
+  <style>
+    body,
+    html {
+      height: 100%;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: black;
+      overflow: hidden;
+    }
+
+    #stars {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAADCAIAAACQ3HqSAAAAEklEQVR42mNkYGD4z8D4AALuAD/g5A5YAAAAAElFTkSuQmCC');
+      background-repeat: repeat;
+      background-size: 2px 2px;
+    }
+
+    .star {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      background-color: white;
+      animation: twinkle 1s infinite;
+    }
+
+    @keyframes twinkle {
+
+      0%,
+      100% {
+        opacity: 0.7;
+      }
+
+      50% {
+        opacity: 1;
+      }
+    }
+
+    #solar-system {
+      position: relative;
+      width: 600px;
+      height: 600px;
+    }
+
+    #sun {
+      position: absolute;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background-color: yellow;
+      top: 275px;
+      /* (600 - 50) / 2 */
+      left: 275px;
+      /* (600 - 50) / 2 */
+    }
+
+    .planet {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background-color: white;
+    }
+
+    .moon {
+      position: absolute;
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background-color: lightgray;
+    }
+
+    /* 行星和月亮的轨道 */
+    .orbit {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      border: 1px dashed white;
+    }
+
+    /* 地球轨道 */
+    .earth-orbit {
+      border-color: lightblue;
+    }
+
+    /* 行星的动画 */
+    @keyframes orbit {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    /* 地球轨道上的动画 */
+    @keyframes earth-orbit {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    #mercury {
+      background-color: gray;
+      animation: orbit 0.6s linear infinite;
+    }
+
+    #venus {
+      background-color: orange;
+      animation: orbit 1.2s linear infinite;
+    }
+
+    #earth {
+      background-color: blue;
+      animation: orbit 1.8s linear infinite;
+    }
+
+    #moon {
+      background-color: lightgray;
+      animation: earth-orbit 0.3s linear infinite;
+    }
+
+    #mars {
+      background-color: red;
+      animation: orbit 2.4s linear infinite;
+    }
+
+    #jupiter {
+      background-color: brown;
+      animation: orbit 3s linear infinite;
+    }
+
+    #saturn {
+      background-color: gold;
+      animation: orbit 3.6s linear infinite;
+    }
+
+    #uranus {
+      background-color: lightblue;
+      animation: orbit 4.2s linear infinite;
+    }
+
+    #neptune {
+      background-color: darkblue;
+      animation: orbit 4.8s linear infinite;
+    }
+
+    /* 设置行星和月亮的初始位置 */
+    #mercury {
+      top: 285px;
+      left: 295px;
+    }
+
+    #venus {
+      top: 270px;
+      left: 300px;
+    }
+
+    #earth {
+      top: 255px;
+      left: 290px;
+    }
+
+    #moon {
+      top: 250px;
+      left: 310px;
+    }
+
+    #mars {
+      top: 240px;
+      left: 285px;
+    }
+
+    #jupiter {
+      top: 225px;
+      left: 280px;
+    }
+
+    #saturn {
+      top: 210px;
+      left: 275px;
+    }
+
+    #uranus {
+      top: 195px;
+      left: 270px;
+    }
+
+    #neptune {
+      top: 180px;
+      left: 265px;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="stars">
+    <script>
+      // 生成背景上的星星
+      for (let i = 0; i < 1000; i++) {
+        let star = document.createElement('div');
+        star.className = 'star';
+        star.style.top = `${Math.random() * 100}%`;
+        star.style.left = `${Math.random() * 100}%`;
+        document.getElementById('stars').appendChild(star);
+      }
+    </script>
+  </div>
+  <div id="solar-system">
+    <div id="sun"></div>
+    <div class="orbit"></div>
+    <div id="mercury" class="planet"></div>
+    <div id="venus" class="planet"></div>
+    <div id="earth" class="planet">
+      <div id="moon" class="moon"></div>
+    </div>
+    <div id="mars" class="planet"></div>
+    <div id="jupiter" class="planet"></div>
+    <div id="saturn" class="planet"></div>
+    <div id="uranus" class="planet"></div>
+    <div id="neptune" class="planet"></div>
+  </div>
+  <script>
+    // 为地球和月球设置相对位置
+    let earth = document.getElementById('earth');
+    let moon = document.getElementById('moon');
+    let earthOrbit = document.querySelector('.earth-orbit');
+    earthOrbit.appendChild(earth);
+    earthOrbit.appendChild(moon);
+    earth.style.position = 'absolute';
+    moon.style.position = 'absolute';
+    earth.style.top = '50%';
+    earth.style.left = '50%';
+    earth.style.transform = 'translate(-50%, -50%)';
+    moon.style.top = '50%';
+    moon.style.left = '30px'; // 从地球中心向外30px作为轨道
+    moon.style.transform = 'translate(-50%, -50%)';
+    earthOrbit.style.top = '275px';
+    earthOrbit.style.left = '275px';
+    earthOrbit.style.width = '60px';
+    earthOrbit.style.height = '60px';
+    moon.style.animationDuration = '0.3s'; // 月球环绕地球的时间
+  </script>
+</body>
+
+</html>

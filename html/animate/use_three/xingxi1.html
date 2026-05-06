@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Solar System Simulation</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #info {
+      background-color: rgba(0, 0, 0, 0.5);
+      color: white;
+      padding: 5px;
+      font-family: Arial, sans-serif;
+      position: absolute;
+      top: 10px;
+      left: 10px;
+    }
+
+    #controls {
+      background-color: rgba(0, 0, 0, 0.5);
+      color: white;
+      padding: 5px;
+      font-family: Arial, sans-serif;
+      position: absolute;
+      bottom: 10px;
+      left: 10px;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="info">
+    ☀️ 太阳系模拟 | 行星轨道 + 月球绕地球 | 星光闪烁微移
+  </div>
+  <div id="controls">
+    鼠标拖动旋转视角 | 滚轮缩放
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/examples/js/controls/OrbitControls.js"></script>
+  <script>
+    // 场景初始化
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+
+    // 背景颜色
+    scene.background = new THREE.Color(0x000000);
+    scene.fog = new THREE.Fog(0x000000, 100, 500);
+
+    // 光源
+    const ambientLight = new THREE.AmbientLight(0x404040);
+    scene.add(ambientLight);
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
+    directionalLight.position.set(1, 1, 1);
+    scene.add(directionalLight);
+
+    // 摄像机设置
+    camera.position.z = 50;
+
+    // 轨道控制器
+    const controls = new THREE.OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true; // 让旋转有阻尼效果
+    controls.dampingFactor = 0.25;
+
+    // 行星数据
+    const planets = [
+      { name: '太阳', color: 0xffff00, radius: 2, orbitRadius: 0, texture: null }, // 太阳
+      { name: '水星', color: 0x888888, radius: 0.2, orbitRadius: 4, texture: null }, // 水星
+      { name: '金星', color: 0xeeaa77, radius: 0.4, orbitRadius: 6, texture: null }, // 金星
+      { name: '地球', color: 0x3399ff, radius: 0.5, orbitRadius: 8, texture: null }, // 地球
+      { name: '月球', color: 0xd9d9d9, radius: 0.2, orbitRadius: 1.5, texture: null }, // 月球
+      { name: '火星', color: 0xff4400, radius: 0.4, orbitRadius: 10, texture: null }, // 火星
+      { name: '木星', color: 0xcc5500, radius: 1, orbitRadius: 14, texture: null }, // 木星
+      { name: '土星', color: 0xffff99, radius: 0.8, orbitRadius: 18, texture: null }, // 土星
+      { name: '天王星', color: 0x55aa55, radius: 0.7, orbitRadius: 22, texture: null }, // 天王星
+      { name: '海王星', color: 0x0066ff, radius: 0.7, orbitRadius: 26, texture: null }, // 海王星
+      { name: '冥王星', color: 0x777777, radius: 0.1, orbitRadius: 30, texture: null }, // 冥王星
+    ];
+
+    // 创建太阳
+    const sunGeometry = new THREE.SphereGeometry(3, 32, 32);
+    const sunMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+    const sun = new THREE.Mesh(sunGeometry, sunMaterial);
+    scene.add(sun);
+
+    // 创建行星和轨道
+    planets.forEach((planet, index) => {
+      const planetGeometry = new THREE.SphereGeometry(planet.radius, 32, 32);
+      const planetMaterial = new THREE.MeshBasicMaterial({ color: planet.color });
+      const planetSphere = new THREE.Mesh(planetGeometry, planetMaterial);
+
+      // 创建轨道
+      const orbitGeometry = new THREE.RingGeometry(planet.orbitRadius, planet.orbitRadius + 0.2, 32);
+      const orbitMaterial = new THREE.MeshBasicMaterial({ color: 0x8888ff, transparent: true, opacity: 0.5 });
+      const orbit = new THREE.Mesh(orbitGeometry, orbitMaterial);
+
+      scene.add(planetSphere);
+      scene.add(orbit);
+
+      // 动态旋转行星
+      if (planet.name !== '太阳') {
+        planetSphere.position.x = planet.orbitRadius;
+        planetSphere.userData.angle = 0;
+      }
+    });
+
+    // 创建背景星星
+    const starGeometry = new THREE.Geometry();
+    for (let i = 0; i < 1000; i++) {
+      const x = Math.random() * 800 - 400;
+      const y = Math.random() * 800 - 400;
+      const z = Math.random() * 800 - 400;
+      starGeometry.vertices.push(new THREE.Vector3(x, y, z));
+    }
+    const starMaterial = new THREE.PointsMaterial({ color: 0xffffff, size: 0.2 });
+    const stars = new THREE.Points(starGeometry, starMaterial);
+    scene.add(stars);
+
+    // 动画循环
+    function animate () {
+      requestAnimationFrame(animate);
+
+      // 动态旋转行星
+      planets.forEach((planet, index) => {
+        if (planet.name !== '太阳') {
+          let angle = planet.userData.angle;
+          angle += 0.005; // 调整旋转速度
+          planet.userData.angle = angle;
+
+          const orbitRadius = planet.orbitRadius;
+          planet.position.x = orbitRadius * Math.cos(angle);
+          planet.position.z = orbitRadius * Math.sin(angle);
+        }
+      });
+
+      // 更新轨道控制器
+      controls.update();
+
+      // 渲染场景
+      renderer.render(scene, camera);
+    }
+
+    animate();
+
+    // 窗口调整大小时更新摄像机
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+  </script>
+</body>
+
+</html>

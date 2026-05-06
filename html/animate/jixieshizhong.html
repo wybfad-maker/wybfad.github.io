@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>公众号关注：前端Hardy</title>
+
+  <!-- 引入可爱字体 -->
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Quicksand:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Bodoni&display=swap" rel="stylesheet">
+  <style type="text/css">
+    /* @import url('https://fonts.googleapis.com/css2?family=Libre+Bodoni&display=swap'); */
+
+    :root {
+      --c0: #000;
+      --c1: #fff;
+      --c2: #f0f0f8;
+      --s1: hsl(45, 30%, 30%);
+      --s2: hsl(46, 23%, 45%);
+      --s3: hsl(48, 20%, 60%);
+      --s4: hsl(50, 15%, 75%);
+    }
+
+    body {
+      margin: 0;
+      height: 100vh;
+      overflow: hidden;
+      background: hsl(120, 20%, 30%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    svg {
+      width: 50%;
+      height: 50%;
+      color-interpolation: sRGB;
+      color-interpolation-filters: sRGB;
+    }
+
+    #hourly {
+      animation: round 43200s var(--s) linear infinite;
+    }
+
+    #minutely {
+      animation: round 3600s var(--s) linear infinite;
+    }
+
+    #secondly {
+      animation: round 60s var(--s) linear infinite;
+    }
+
+    @keyframes round {
+      0% {
+        transform: rotate(0deg)
+      }
+
+      100% {
+        transform: rotate(360deg)
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="main">
+    <svg viewBox="-300 -300 850 600" style="filter:drop-shadow(#221c -2px 0px 10px)">
+      <filter id="f1">
+        <feFlood flood-color="var(--s1)" />
+        <feComposite in2="SourceGraphic" operator="in" />
+        <feGaussianBlur stdDeviation="2" result="a" />
+        <feGaussianBlur in="SourceGraphic" stdDeviation="2" />
+        <feComposite in2="SourceGraphic" operator="in" />
+        <feMerge>
+          <feMergeNode in="a" />
+          <feMergeNode in="SourceGraphic" />
+        </feMerge>
+      </filter>
+      <clipPath id="cp">
+        <circle r="280" />
+      </clipPath>
+      <radialGradient id="rg1" cx="-40" cy="0" r="280" gradientUnits="userSpaceOnUse">
+        <stop offset=".1" stop-color="var(--s1)" />
+        <stop offset=".9" stop-color="var(--s4)" />
+        <stop offset=".95" stop-color="var(--c1)" />
+        <stop offset="1" stop-color="var(--s4)" />
+      </radialGradient>
+      <radialGradient id="rg2" cx="424" cy="-1" r="102" gradientUnits="userSpaceOnUse">
+        <stop offset=".75" stop-color="var(--s1)" />
+        <stop offset=".9" stop-color="var(--s4)" />
+        <stop offset="1" stop-color="var(--s2)" />
+      </radialGradient>
+      <linearGradient id="lg1" x1="-230" x2="230" y1="20" y2="-20" gradientUnits="userSpaceOnUse">
+        <stop offset="0" stop-color="var(--c1)" />
+        <stop offset=".3" stop-color="var(--s4)" />
+        <stop offset=".85" stop-color="var(--s4)" />
+        <stop offset="1" stop-color="var(--s1)" />
+      </linearGradient>
+      <linearGradient id="lg2" x1="0" x2="0" y1="39" y2="-41" gradientUnits="userSpaceOnUse">
+        <stop offset="0" stop-color="var(--s1)" />
+        <stop offset=".25" stop-color="var(--s2)" />
+        <stop offset=".39" stop-color="var(--s4)" />
+        <stop offset=".48" stop-color="var(--s3)" />
+        <stop offset=".52" stop-color="var(--s3)" />
+        <stop offset=".61" stop-color="var(--s4)" />
+        <stop offset=".75" stop-color="var(--s2)" />
+        <stop offset="1" stop-color="var(--s1)" />
+      </linearGradient>
+      <circle r="280.5" style="fill:var(--s2)" />
+      <circle r="274" cx="-1" style="fill:none;stroke:var(--c1);stroke-width:2;filter:blur(4px);clip-path:url(#cp)" />
+      <circle r="92" cx="420" style="fill:none;stroke:url(#rg2);stroke-width:26" />
+      <path d="M 300,-28 C 305,-26 310,-26 315,-30 V 30 C 310,26 305,26 300,28 Z"
+        style="fill:var(--s2);stroke:var(--s1)" />
+      <path
+        d="M318 35H321A14 2 0 01349 35H365V-35H349A14 2 0 01321-35H318C316-35 315-34 315-32V32C315 34 316 35 318 35ZM297 30C299 30 300 29 300 27V-27C300-29 299-30 297-30L275-27C268-12 268,12 275,27Z"
+        style="fill:url(#lg2)" />
+      <g style="fill:var(--s2);stroke:var(--s4);stroke-width:2;stroke-opacity:0.7">
+        <path d="M 365,-36A50 50 0 0 1 445,-18V18A50 50 0 0 1 365,36" style="fill:var(--s2);stroke:var(--s2)" />
+        <path d="M 365,-36A50 50 0 0 1 445,-18V18A50 50 0 0 1 365,36" style="filter:url(#f1)" />
+        <path d="M 365,-30A50 44 0 0 1 445,-15V15A50 44 0 0 1 365,30" style="filter:url(#f1)" />
+        <path d="M 365,-24A50 38 0 0 1 445,-12V12A50 38 0 0 1 365,24" style="filter:url(#f1)" />
+        <path d="M 365,-18A50 30 0 0 1 445,-9V9A50 30 0 0 1 365,18" style="filter:url(#f1)" />
+        <path d="M 365,-12A50 21 0 0 1 445,-6V6A50 21 0 0 1 365,12" style="filter:url(#f1)" />
+        <path d="M 365,-6A50 12 0 0 1 445,-3V3A50 12 0 0 1 365,6" style="filter:url(#f1)" />
+        <path d="M 365,0 445,0" style="stroke-opacity:0.7;filter:blur(.8px)" />
+      </g>
+      <circle r="234" style="fill:var(--s4);stroke:url(#rg1);stroke-width:12" />
+      <circle r="222" style="fill:var(--c2);stroke:#333" />
+      <circle r="226" style="fill:none;stroke:url(#lg1);stroke-width:8" />
+      <g style="text-anchor:middle;font-family:'Libre Bodoni';font-size:20px;letter-spacing:-.8px">
+        <text y="-188">60</text>
+        <text y="-188" transform="rotate(30)">5</text>
+        <text y="-188" transform="rotate(60)">10</text>
+        <text y="-188" transform="rotate(90)">15</text>
+        <text y="-188" transform="rotate(120)">20</text>
+        <text y="-188" transform="rotate(150)">25</text>
+        <text y="-188" transform="rotate(180)">30</text>
+        <text y="-188" transform="rotate(210)">35</text>
+        <text y="-188" transform="rotate(240)">40</text>
+        <text y="-188" transform="rotate(-90)">45</text>
+        <text y="-188" transform="rotate(-60)">50</text>
+        <text y="-188" transform="rotate(-30)">55</text>
+        <animateTransform attributeName="transform" type="rotate" values="0;0;360;360;0" keyTimes="0;.4516;.5;.9516;1"
+          begin="0s" dur="62s" repeatCount="indefinite" />
+      </g>
+      <g>
+        <path
+          d="M-17-171V-170H-14L-9.75-136.75-14-116H-17V-115H-10V-116H-13L-9.34-133.75-7-115H17V-116H14V-170H17V-171H-6V-170H-3L-6.6-152.25-9-171ZM-2-170H1V-116H-2L-6.25-149.25ZM6-170H9V-116H6Z" />
+        <path d="M-5.5-171V-170H-2.5V-116H-5.5V-115H5.5V-116H2.5V-170H5.5V-171Z" transform="rotate(30)" />
+        <path d="M-9.5-171V-170H-6.5V-116H-9.5V-115H9.5V-116H6.5V-170H9.5V-171ZM-1.5-170H1.5V-116H-1.5Z"
+          transform="rotate(60)" />
+        <path
+          d="M-13.5-171V-170H-10.5V-116H-13.5V-115H13.5V-116H10.5V-170H13.5V-171ZM-5.5-170H-2.5V-116H-5.5ZM2.5-170H5.5V-116H2.5Z"
+          transform="rotate(90)" />
+        <path
+          d="M-17.5-171V-170H-14.5V-116H-17.5V-115H17.5V-116H14.5V-170H17.5V-171ZM-9.5-170H-6.5V-116H-9.5ZM-1.5-170H1.5V-116H-1.5ZM6.5-170H9.5V-116H6.5Z"
+          transform="rotate(120)" />
+        <path d="M-12.5-171V-170H-9.5L-2.5-115H-1.5L5.5-170H8.5V-171H1.5V-170H4.5L0-134.6-4.5-170H-1.5V-171Z"
+          transform="rotate(150)" />
+        <path
+          d="M-14.5-171V-170H-11.5L-4.5-115H-3.5L3.5-170H6.5V-116H3.5V-115H14.5V-116H11.5V-170H14.5V-171H-.5V-170H2.5L-2-134.6-6.5-170H-3.5V-171Z"
+          transform="rotate(180)" />
+        <path
+          d="M-17-171V-170H-14L-8.5-115H-7.5L-2-170H1V-116H-2V-115H17V-116H14V-170H17V-171H-6V-170H-3L-5.9-138.8-9-171ZM6-170H9V-116H6Z"
+          transform="rotate(210)" />
+        <path
+          d="M-20-171V-170H-17L-11.5-115H-10.5L-5-170H-2V-116H-5V-115H22V-116H19V-170H22V-171H-9V-170H-6L-8.9-138.8-12-171ZM3-170H6V-116H3ZM11-170H14V-116H11Z"
+          transform="rotate(240)" />
+        <path
+          d="M-13-171V-170H-10V-116H-13V-115H2V-116H-1L2.66-133.75 5-115H13V-116H10L5.75-149.25 10-170H13V-171H6V-170H9L5.4-152.25 3-171ZM-5-170H-2L2.25-136.75-2-116H-5Z"
+          transform="rotate(-90)" />
+        <path
+          d="M-9-171V-170H-6L-1.75-136.75-6-116H-9V-115H-2V-116H-5L-1.34-133.75 1-115H9V-116H6L1.75-149.25 6-170H9V-171H2V-170H5L1.4-152.25-1-171Z"
+          transform="rotate(-60)" />
+        <path
+          d="M-13-171V-170H-10L-5.75-136.75-10-116H-13V-115H-6V-116H-9L-5.34-133.75-3-115H13V-116H10V-170H13V-171H-2V-170H1L-2.6-152.25-5-171ZM2-170H5V-116H2L-2.25-149.25Z"
+          transform="rotate(-30)" />
+        <animateTransform attributeName="transform" type="rotate" values="0;0;360;360;0" keyTimes="0;.4681;.5;.9681;1"
+          begin="0s" dur="94s" repeatCount="indefinite" />
+      </g>
+      <circle r="185" style="fill:none;stroke:var(--c0)" />
+      <circle r="175" style="fill:none;stroke:var(--c0)" />
+      <circle pathLength="900" r="180"
+        style="fill:none;stroke:var(--c0);stroke-width:10;stroke-dasharray:1, 14, 1, 14, 1, 14, 1, 29;stroke-dashoffset:-14.5" />
+      <circle pathLength="900" r="180"
+        style="fill:none;stroke:var(--c0);stroke-width:3;stroke-linecap:round;stroke-dasharray:0, 75" />
+      <g transform="translate(0,118)"
+        style="text-anchor:middle;font-family:'Libre Bodoni';font-size:12px;letter-spacing:-.8px">
+        <circle r="60" style="fill:var(--c2);stroke:var(--c0)" />
+        <circle pathLength="600" r="54"
+          style="fill:none;stroke:var(--c0);stroke-width:6;stroke-dasharray:2, 8;stroke-dashoffset:1" />
+        <path d="M58 0H40M29-50.2 20-34.6M-29-50.2-20-34.6M-58 0-40 0M-29 50.2-20 34.6M29 50.2 20 34.6"
+          style="fill:none;stroke:var(--c0);stroke-width:1.2" />
+        <text y="-38">60</text>
+        <text y="-38" transform="rotate(60)">10</text>
+        <text y="-38" transform="rotate(120)">20</text>
+        <text y="-38" transform="rotate(180)">30</text>
+        <text y="-38" transform="rotate(240)">40</text>
+        <text y="-38" transform="rotate(-60)">50</text>
+        <g>
+          <path id="secondly" d="M1 15V-55A1 1 0 0 1-1-55V15A5 5 0 1 01 15" />
+          <animateTransform attributeName="transform" type="rotate" values="0;0;360;360;0" keyTimes="0;.4706;.5;.9706;1"
+            begin="-15s" dur="34s" repeatCount="indefinite" />
+        </g>
+        <circle r="10" />
+        <path
+          d="M0-3.7A4.2 3.7 0 00-4.2 0 4.2 3.7 0 000 3.7 4.2 3.7 0 004.2 0 4.2 3.7 0 000-3.7 4.2 3.7 0 000-3.7ZM0-3.3A2.8 3.3 0 012.8 0 2.8 3.3 0 010 3.3 2.8 3.3 0 01-2.8 0 2.8 3.3 0 010-3.3Z"
+          style="fill:var(--c1);filter:blur(0.6px)" />
+      </g>
+      <g>
+        <path id="hourly"
+          d="m1.7 0v-60c1.9 0 .3-2 .3-5v-6.2c1.1-.8 1.5-.8 2.2-.8-1 3 1 8 3 10 1 1 3 0 2-1-2-2-4-6-2-9 2 0 2-3 0-3-1-1-2.2-4 0-4.5 2-.5 2 5.1 4.5 5.1 3.5 0 .5-10.6-3.5-9.1-3 1.1-4 3.5-4 8.5-.7 0-1.3 0-2.4-.8V-85c0-1 .3-1 .3-2.5S2-89 1.9-90l-.7-10v-45a1.2 1.2 0 00-2.4 0v45c0 3.3-.7 6.7-.7 10 0 1-.2 1-.2 2.6 0 1.4.3 1.4.3 2.4v9.2c-1.1.8-1.7.8-2.4.8 0-5-1-7.4-4-8.5-4-1.5-7 9.1-3.5 9.1 2.5 0 2.5-5.6 4.5-5.1 2.2.5 1 3.5 0 4.5-2 0-2 3 0 3 2 3 0 7-2 9-1 1 1 2 2 1 2-2 4-7 3-10 .7 0 1.1 0 2.2.8v6.2c0 3-1.6 5 .3 5V0z" />
+        <animateTransform attributeName="transform" type="rotate" values="0;0;360;360;0" keyTimes="0;.4545;.5;.9545;1"
+          begin="0s" dur="22s" repeatCount="indefinite" />
+      </g>
+      <g>
+        <path id="minutely"
+          d="m1.2 0V-90c2 0 .4-2 .4-5v-6.2c1.1-.8 1.7-.8 2.4-.8-1 3 1 8 3 10 1 1 3 0 2-1-2-2-4-6-2-9 2 0 2-3 0-3-1-1-2.2-4 0-4.5 2-.5 2 5.1 4.5 5.1 3.5 0 .5-10.6-3.5-9.1-3 1.1-4 3.5-4 8.5-.7 0-1.5 0-2.6-.8v-9.2c0-1 .3-1 .3-2.5s-.2-1.5-.2-2.5L1-130v-64a1 1 0 00-2 0v64l-.5 10c0 1-.2 1-.2 2.6 0 1.4.3 1.4.3 2.4v9.2c-1.1.8-1.9.8-2.6.8 0-5-1-7.4-4-8.5-4-1.5-7 9.1-3.5 9.1 2.5 0 2.5-5.6 4.5-5.1 2.2.5 1 3.5 0 4.5-2 0-2 3 0 3 2 3 0 7-2 9-1 1 1 2 2 1 2-2 4-7 3-10 .7 0 1.3 0 2.4.8V-95c0 3-1.6 5 .4 5V0z" />
+        <animateTransform attributeName="transform" type="rotate" values="0;0;360;360;0" keyTimes="0;.4783;.5;.9783;1"
+          begin="0s" dur="46s" repeatCount="indefinite" />
+      </g>
+      <circle r="15" />
+      <path
+        d="M0-3.7A4.2 3.7 0 00-4.2 0 4.2 3.7 0 000 3.7 4.2 3.7 0 004.2 0 4.2 3.7 0 000-3.7 4.2 3.7 0 000-3.7ZM0-3.3A2.8 3.3 0 012.8 0 2.8 3.3 0 010 3.3 2.8 3.3 0 01-2.8 0 2.8 3.3 0 010-3.3Z"
+        style="fill:var(--c1);filter:blur(.6px)" />
+    </svg>
+  </div>
+  <script type="">
+    const d = new Date();
+    const h = d.getHours() % 12;
+    const m = d.getMinutes();
+    const s = d.getSeconds();
+    const totalSeconds = h * 3600 + m * 60 + s;
+    document.querySelector('svg')?.style?.setProperty('--s', -totalSeconds + 's');
+  </script>
+</body>
+
+</html>

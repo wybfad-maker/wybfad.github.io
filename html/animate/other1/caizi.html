@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>彩纸</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: #111;
+      perspective: 1000px;
+    }
+
+    /** 彩纸容器：控制整体飘落轨迹  **/
+    .confetti {
+      position: absolute;
+      top: -50px;
+      /** 初始位置在屏幕上方外，模拟从顶部飘落 **/
+      transform-style: preserve-3d;
+      /** 保留子元素的 3D 变换，不扁平化 **/
+      animation: fall linear forwards;
+      /** 飘落动画：匀速，结束后保持最终状态 **/
+    }
+
+    /** 彩纸本体：控制旋转  **/
+    .piece {
+      position: relative;
+      transform-style: preserve-3d;
+      /** 子元素（正反面）保留 3D 变换 **/
+      animation: spin linear infinite;
+      /** 旋转动画：匀速，无限循环 **/
+    }
+
+    /** 彩纸正反面：立体面  **/
+    .side {
+      position: absolute;
+      width: 12px;
+      height: 18px;
+      /** 长方形纸片，更贴近真实彩纸 **/
+      backface-visibility: hidden;
+      /** 隐藏背面（旋转时不会看到透明的反面） **/
+    }
+
+    .back {
+      transform: rotateY(180deg);
+      /** 反面绕 Y 轴旋转 180°，与正面背对 **/
+      filter: brightness(0.6);
+      /** 反面调暗，模拟立体纸片的阴影感 **/
+    }
+
+    /** 飘落动画：从顶部到屏幕下方，伴随 3D 远近和缩放  **/
+    @keyframes fall {
+      0% {
+        transform: translateY(0) translateZ(-800px) scale(0.3);
+        /** 初始：远、小、顶部 **/
+        opacity: 0.8;
+      }
+
+      100% {
+        transform: translateY(110vh) translateZ(300px) scale(1.4);
+        /** 结束：近、大、超出屏幕下方 **/
+        opacity: 1;
+      }
+    }
+
+    /** 旋转动画：3 轴同时旋转，模拟不规则飘落  **/
+    @keyframes spin {
+      0% {
+        transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg);
+      }
+
+      100% {
+        transform: rotateX(720deg) rotateY(720deg) rotateZ(360deg);
+        /** X/Y 轴转 2 圈，Z 轴转 1 圈 **/
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <script>
+    // 1. 定义彩纸颜色数组：高饱和度亮色，视觉冲击力强
+    const colors = [
+      "#ff0a54", "#ff477e", "#ff85a1", // 粉色系
+      "#00f5d4", "#9b5de5",             // 青/紫系
+      "#fee440", "#00bbf9"              // 黄/蓝系
+    ];
+
+    // 2. 创建单张彩纸的核心函数
+    function createConfetti () {
+      // 步骤1：创建彩纸DOM结构（层级：confetti → piece → front/back）
+      const confetti = document.createElement("div");
+      confetti.classList.add("confetti"); // 外层容器，控制飘落
+
+      const piece = document.createElement("div");
+      piece.classList.add("piece"); // 内层，控制旋转
+
+      const front = document.createElement("div");
+      const back = document.createElement("div");
+      front.classList.add("side");
+      back.classList.add("side", "back"); // 正反面
+
+      // 步骤2：随机选择颜色，设置正反面背景
+      const color = colors[Math.floor(Math.random() * colors.length)];
+      front.style.background = color;
+      back.style.background = color;
+
+      // 步骤3：组装DOM结构
+      piece.appendChild(front);
+      piece.appendChild(back);
+      confetti.appendChild(piece);
+
+      // 步骤4：随机化关键参数，避免特效重复
+      confetti.style.left = Math.random() * window.innerWidth + "px"; // 随机水平位置
+      const fallDuration = Math.random() * 4 + 4; // 飘落时长：4-8秒（随机）
+      const spinDuration = Math.random() * 3 + 2; // 旋转时长：2-5秒（随机）
+
+      // 步骤5：给动画设置随机时长
+      confetti.style.animationDuration = fallDuration + "s";
+      piece.style.animationDuration = spinDuration + "s";
+
+      // 步骤6：添加到页面
+      document.body.appendChild(confetti);
+
+      // 步骤7：自动清理元素（避免DOM堆积，优化性能）
+      setTimeout(() => {
+        confetti.remove(); // 飘落结束后删除元素
+      }, fallDuration * 1000); // 延迟时间 = 飘落时长（毫秒）
+    }
+
+    // 3. 定时创建彩纸：每90毫秒创建一张，形成连续飘落效果
+    setInterval(createConfetti, 90);
+  </script>
+</body>
+
+</html>

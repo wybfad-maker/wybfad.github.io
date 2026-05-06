@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CSS随机函数实现转盘效果</title>
+  <style type="text/css">
+    @import url(https://fonts.bunny.net/css?family=jura:300,700);
+    @layer base, notes, demo;
+
+    @layer demo {
+      :root {
+        --items: 12;
+        --spin-easing: cubic-bezier(0, 0.061, 0, 1.032);
+        --slice-angle: calc(360deg / var(--items));
+        --start-angle: calc(var(--slice-angle) / 2);
+
+        --wheel-radius: min(40vw, 300px);
+        --wheel-size: calc(var(--wheel-radius) * 2);
+        --wheel-padding: 10%;
+        --item-radius: calc(var(--wheel-radius) - var(--wheel-padding));
+
+        --wheel-bg-1: oklch(0.80 0.16 30);
+        --wheel-bg-2: oklch(0.74 0.16 140);
+        --wheel-bg-3: oklch(0.80 0.16 240);
+        --wheel-bg-4: oklch(0.74 0.16 320);
+
+        --marker-bg-color: black;
+        --button-text-color: white;
+        --spin-duration: random(1s, 3s);
+
+        --random-angle: random(1200deg, 4800deg, by var(--slice-angle));
+
+        @supports not (rotate: random(1deg, 10deg)) {
+          --spin-duration: 2s;
+          --random-angle: 4800deg;
+        }
+      }
+
+
+      .wrapper {
+        position: relative;
+        inset: 0;
+        margin: auto;
+        width: var(--wheel-size);
+        aspect-ratio: 1;
+
+        input[type=checkbox] {
+          position: absolute;
+          opacity: 0;
+          width: 1px;
+          height: 1px;
+          pointer-events: none;
+        }
+
+        &:has(input[type=checkbox]:checked) {
+          --spin-it: 1;
+          --btn-spin-scale: 0;
+          --btn-spin-event: none;
+          --btn-spin-trans-duration: var(--spin-duration);
+          --btn-reset-scale: 1;
+          --btn-reset-event: auto;
+          --btn-reset-trans-delay: var(--spin-duration);
+        }
+
+        .controls {
+          position: absolute;
+          z-index: 2;
+          inset: 0;
+          margin: auto;
+          width: min(100px, 10vw);
+          aspect-ratio: 1;
+          background: var(--marker-bg-color);
+          border-radius: 9in;
+          transition: scale 150ms ease-in-out;
+
+          &:has(:hover, :focus-visible) label {
+            scale: 1.2;
+            rotate: 20deg;
+          }
+
+          &::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            translate: -50% -50%;
+            width: 20%;
+            /* aspect-radio: 2/10; */
+            /* aspect-ratio: 2/10; */
+            background-color: transparent;
+            border: 2vw solid var(--marker-bg-color);
+            border-bottom-width: 4vw;
+            border-top: 0;
+            border-left-color: transparent;
+            border-right-color: transparent;
+            z-index: -1;
+          }
+
+          label {
+            cursor: pointer;
+            display: grid;
+            place-items: center;
+            width: 100%;
+            aspect-ratio: 1;
+            color: var(--button-text-color);
+            transition:
+              rotate 150ms ease-in-out,
+              scale 150ms ease-in-out;
+
+            svg {
+              grid-area: 1/1;
+              width: 50%;
+              height: 50%;
+              transition-property: scale;
+              transition-timing-function: ease-in-out;
+
+              &:first-child {
+                transition-duration: var(--btn-spin-trans-duration, 150ms);
+                scale: var(--btn-spin-scale, 1);
+                pointer-events: var(--btn-spin-event, auto);
+              }
+
+              &:last-child {
+                transition-duration: 150ms;
+                transition-delay: var(--btn-reset-trans-delay, 0ms);
+                scale: var(--btn-reset-scale, 0);
+                pointer-events: var(--btn-reset-event, none);
+              }
+            }
+          }
+
+
+        }
+
+        &:has(input[type=checkbox]:checked)>.wheel {
+          animation: --spin-wheel var(--spin-duration, 3s) var(--spin-easing, ease-in-out) forwards;
+        }
+
+        .wheel {
+          position: absolute;
+          inset: 0;
+          border-radius: 99vw;
+          border: 1px solid white;
+          user-select: none;
+          font-size: 24px;
+          font-weight: 600;
+          background: repeating-conic-gradient(from var(--start-angle),
+              var(--wheel-bg-1) 0deg var(--slice-angle),
+              var(--wheel-bg-2) var(--slice-angle) calc(var(--slice-angle) * 2),
+              var(--wheel-bg-3) calc(var(--slice-angle) * 2) calc(var(--slice-angle) * 3),
+              var(--wheel-bg-4) calc(var(--slice-angle) * 3) calc(var(--slice-angle) * 4));
+
+          >span {
+            --i: sibling-index();
+
+            @supports not (sibling-index(0)) {
+              &:nth-child(1) {
+                --i: 1;
+              }
+
+              &:nth-child(2) {
+                --i: 2;
+              }
+
+              &:nth-child(3) {
+                --i: 3;
+              }
+
+              &:nth-child(4) {
+                --i: 4;
+              }
+
+              &:nth-child(5) {
+                --i: 5;
+              }
+
+              &:nth-child(6) {
+                --i: 6;
+              }
+
+              &:nth-child(7) {
+                --i: 7;
+              }
+
+              &:nth-child(8) {
+                --i: 8;
+              }
+
+              &:nth-child(9) {
+                --i: 9;
+              }
+
+              &:nth-child(10) {
+                --i: 10;
+              }
+
+              &:nth-child(11) {
+                --i: 11;
+              }
+
+              &:nth-child(12) {
+                --i: 12;
+              }
+            }
+
+            position: absolute;
+            offset-path: circle(var(--item-radius) at 50% 50%);
+            offset-distance: calc(var(--i) / var(--items) * 100%);
+            offset-rotate: auto;
+          }
+        }
+      }
+
+      @keyframes --spin-wheel {
+        to {
+          rotate: var(--random-angle);
+        }
+      }
+    }
+
+    @layer notes {
+      section.notes {
+        margin: auto;
+        width: min(80vw, 56ch);
+
+        p {
+          text-wrap: pretty;
+        }
+
+        > :first-child {
+          color: red;
+          background: rgb(255, 100, 103);
+          padding: .5em;
+          color: white;
+
+          @supports (rotate: random(1deg, 10deg)) {
+            display: none;
+          }
+        }
+      }
+    }
+
+    @layer base {
+
+      *,
+      ::before,
+      ::after {
+        box-sizing: border-box;
+      }
+
+      :root {
+        color-scheme: light dark;
+        --bg-dark: rgb(21 21 21);
+        --bg-light: rgb(248, 244, 238);
+        --txt-light: rgb(10, 10, 10);
+        --txt-dark: rgb(245, 245, 245);
+        --line-light: rgba(0 0 0 / .75);
+        --line-dark: rgba(255 255 255 / .25);
+        --clr-bg: light-dark(var(--bg-light), var(--bg-dark));
+        --clr-txt: light-dark(var(--txt-light), var(--txt-dark));
+        --clr-lines: light-dark(var(--line-light), var(--line-dark));
+      }
+
+      body {
+        background-color: var(--clr-bg);
+        color: var(--clr-txt);
+        min-height: 100svh;
+        margin: 0;
+        padding: 2rem;
+        font-family: "Jura", sans-serif;
+        font-size: 1rem;
+        line-height: 1.5;
+        display: grid;
+        place-content: center;
+        gap: 2rem;
+      }
+
+      strong {
+        font-weight: 700;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <section class="wrapper">
+    <input type="checkbox" id="radio-spin">
+    <div class="controls">
+      <label for="radio-spin">
+        <svg xmlns="http: //www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+          aria-label="Spin the Wheel" title="Spin the Wheel">
+
+          <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+
+          <path d="M14 12a2 2 0 1 0 -4 0a2 2 0 0 0 4 0" />
+
+          <path d="M12 21c-3.314 0 -6 -2.462 -6 -5.5s2.686 -5.5 6 -5.5" />
+
+          <path d="M21 12c0 3.314 -2.462 6 -5.5 6s-5.5 -2.686 -5.5 -6" />
+
+          <path d="M12 14c3.314 0 6 -2.462 6 -5.5s-2.686 -5.5 -6 -5.5" />
+
+          <path d="M14 12c0 -3.314 -2.462 -6 -5.5 -6s-5.5 2.686 -5.5 6" />
+
+        </svg>
+
+        <svg xmlns="http: //www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+          aria-label="Reset the Wheel" title="Reset the Wheel">
+
+          <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+
+          <path d="M3.06 13a9 9 0 1 0 .49 -4.087" />
+
+          <path d="M3 4.001v5h5" />
+
+          <path d="M11 12a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" />
+
+        </svg>
+      </label>
+    </div>
+
+    <div id="wheel" class="wheel">
+      <span>乔丹</span>
+      <span>詹姆斯</span>
+      <span>布莱恩特</span>
+      <span>约翰逊</span>
+      <span>库里</span>
+      <span>奥尼尔</span>
+      <span>邓肯</span>
+      <span>贾巴尔</span>
+      <span>杜兰特</span>
+      <span>哈登</span>
+      <span>字母哥</span>
+      <span>伦纳德</span>
+    </div>
+  </section>
+  <p>
+    <strong>轮盘赌模拟器</strong>
+    <span class="desc">这是一个基于CSS的轮盘赌模拟器，用户可以点击旋转轮盘，轮盘会随机停止在某个位置，用户可以查看停止的位置。</span><br />
+    <span class="link">https://mp.weixin.qq.com/s/i1XjvBMCWnZB_l5XSrCkdg</span>
+  </p>
+</body>
+
+</html>
