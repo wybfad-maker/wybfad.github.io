@@ -34,11 +34,107 @@ application.macosx
 out
 
 # C/C++
+
+## Prerequisites
+*.d
+
+## Object files
 *.o
+*.ko
+*.obj
+*.elf
+
+## Linker output
+*.ilk
+*.map
+*.exp
+
+## Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+## Precompiled Headers
+*.gch
+*.pch
+
+## Linker files
+*.ilk
+
+## Shared objects (inc. Windows DLLs)
+## Compiled Dynamic libraries
+*.dll
+*.so
+*.so.*
+*.dylib
+
+## Fortran module files
+*.mod
+*.smod
+
+## Compiled Static libraries
+*.lai
+*.la
 *.a
 *.lib
-*.dylib
-*.so
+
+## Executables
+*.exe
+*.out
+*.app
+*.i*86
+*.x86_64
+*.hex
+
+# settings files
+.hbuilderx/
+.sixth/
+.vscode/
+
+# Build directories
+build/
+Build/
+build-*/
+
+# CMake generated files
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+install_manifest.txt
+compile_commands.json
+
+# Temporary files
+*.tmp
+*.log
+*.bak
+*.swp
+
+# vcpkg
+vcpkg_installed/
+
+## Debug files
+*.dSYM/
+*.su
+*.idb
+*.pdb
+
+## Kernel Module Compile Results
+*.mod*
+*.cmd
+.tmp_versions/
+modules.order
+Module.symvers
+Mkfile.old
+dkms.conf
+
+## debug information files
+*.dwo
+
+## test output & cache
+Testing/
+.cache/
 
 # Python
 *.pyc
@@ -56,3 +152,6 @@ ehthumbs.db
 .env.development.local
 .env.test.local
 .env.production.local
+
+server/json/modify_vscode_settings
+server/json/modify_vscode_settings/
