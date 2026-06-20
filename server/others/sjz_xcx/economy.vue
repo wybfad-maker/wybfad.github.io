@@ -18,8 +18,8 @@
         <view class="kzb_search_2">
           <view class="kzb_search_2_label">价值：</view>
           <view class="kzb_search_2_box">
-            <view class="kzb_search_2_box_item" :class="{ 'active': currentWar.val === val }" v-for="(val, i) in valueArr"
-              :key="i" @click="currentWar.val = val">
+            <view class="kzb_search_2_box_item" :class="{ 'active': currentWar.val === val }"
+              v-for="(val, i) in valueArr" :key="i" @click="currentWar.val = val">
               <text class="icon" /><text>{{ val }}w</text>
             </view>
           </view>
@@ -57,8 +57,8 @@
                   <view>战备：<text>{{ unit.currentValue }}</text></view>
                 </view>
                 <view class="unit_diffValue">
-                  <text
-                    :style="{ color: goodsGrade?.[unit.objectGrade]?.color || '#0ff794' }">{{ goodsGrade?.[unit.objectGrade]?.text || '假账：' }}{{ unit.diffValue }}</text>
+                  <text :style="{ color: goodsGrade?.[unit.objectGrade]?.color || '#0ff794' }">{{
+                    goodsGrade?.[unit.objectGrade]?.text || '假账：' }}{{ unit.diffValue }}</text>
                 </view>
               </view>
             </view>
@@ -649,7 +649,9 @@ image {
           flex-direction: column;
           justify-content: space-between;
 
-          .unit_tit {}
+          .unit_tit {
+            font-weight: 500;
+          }
 
           .unit_price {
             display: flex;

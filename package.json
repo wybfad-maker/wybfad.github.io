@@ -18,8 +18,9 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "express": "^5.1.0",
-    "nodemon": "^3.1.11",
+    "express": "^5.2.1",
+    "nodemon": "^3.1.14",
     "sqlite3": "^5.1.7"
-  }
+  },
+  "packageManager": "pnpm@11.6.0"
 }

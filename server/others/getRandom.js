@@ -28,7 +28,7 @@ function getRandomInt (min, max) {
 function getRandomIntInclusive (min, max) {
   min = Math.ceil(min);
   max = Math.floor(max);
-  return Math.floor(Math.random() * (max - min + 1)) + min; //含最大值，含最小值 
+  return Math.floor(Math.random() * (max - min + 1)) + min; //含最大值，含最小值
 }
 
 // Math.random() 不能提供像密码一样安全的随机数字
@@ -39,38 +39,58 @@ function getRandomBytes (length) {
   return array;
 }
 
+// 得到一个随机的十六进制字符串
+// 这个函数返回一个随机的十六进制字符串，由指定长度的随机字节组成。
 function getRandomHexString (length) {
   const array = getRandomBytes(length);
   return Array.from(array, (byte) => byte.toString(16).padStart(2, '0')).join('');
 }
 
+// 得到一个随机字符串
+// 这个函数返回一个随机的字符串，由指定长度的随机字节组成。
 function getRandomString (length) {
   const array = getRandomBytes(length);
   return Array.from(array, (byte) => String.fromCharCode(byte)).join('');
 }
+
+// 得到一个随机的 Base64 字符串
+// 这个函数返回一个随机的 Base64 字符串。
 function getRandomBase64String (length) {
   const array = getRandomBytes(length);
   return btoa(String.fromCharCode.apply(null, array));
 }
 
+// 生成一个随机 UUID
+// 这个函数返回一个随机的 UUID (Universally Unique Identifier)。
 function getRandomUUID () {
   return getRandomHexString(16);
 }
 
+// 生成一个随机密码
+// 这个函数返回一个在指定长度内的随机密码。密码包含字母、数字和特殊字符。
 function getRandomPassword (length) {
   const array = getRandomBytes(length);
   return Array.from(array, (byte) => String.fromCharCode(byte % 36)).join('');
 }
 
+// 生成一个随机数
+// 这个函数返回一个在指定范围内的随机数。这个范围是闭区间，即包含开始值和结束值。
 function getRandomNumber (min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
+
+// 生成一个随机布尔值
+// 这个函数返回一个随机的布尔值，即 true 或 false。
 function getRandomBoolean () {
   return Math.random() < 0.5;
 }
+// 生成一个随机日期
+// 这个函数返回一个在指定日期范围内的随机日期。这个范围是闭区间，即包含开始日期和结束日期。
 function getRandomDate (start, end) {
   return new Date(getRandomNumber(start.getTime(), end.getTime()));
 }
+// 生成一个随机颜色
+// 这个函数返回了一个随机的十六进制颜色值，例如 "#1A3B5C"。
 function getRandomColor () {
   const letters = '0123456789ABCDEF';
   let color = '#';
@@ -88,13 +108,14 @@ function getRandomImage (width, height) {
   ctx.fillRect(0, 0, width, height);
   return canvas.toDataURL();
 }
-
+// 从预设的英文名字列表中随机获取一个名字
 function getRandomName () {
   const names = [
     'Alice', 'Bob', 'Charlie', 'David', 'Emily', 'Frank', 'Grace', 'Henry', 'Isabella', 'Jack', 'Kevin', 'Lily', 'Mia', 'Nancy', 'Olivia', 'Peter', 'Quincy', 'Rachel', 'Steve', 'Tina', 'Ursula', 'Victor', 'Wendy', 'Xavier', 'Yvonne', 'Zachary'
   ];
   return names[Math.floor(Math.random() * names.length)];
 }
+
 // 不要再用 Math.random()！用这个 API 做到真随机
 // 更安全的替代方案：crypto.getRandomValues()
 // window.crypto 是浏览器提供的一套用于密码学操作的 API，
@@ -113,6 +134,7 @@ function secureRandomInt (min = 0, max = 100) {
 
 // console.log(secureRandomInt(1, 6));   // 模拟安全的骰子
 // console.log(secureRandomInt(1000, 9999)); // 生成一个安全的 4 位验证码
+
 // 导出通用集成函数
 export function useFnEffect () {
   return {
@@ -140,20 +162,6 @@ export function useFnEffect () {
 // 导出函数
 export {
   getRandom,
-  getRandomArbitrary,
-  getRandomInt,
-  getRandomIntInclusive,
-  getRandomBytes,
-  getRandomHexString,
-  getRandomString,
-  getRandomBase64String,
-  getRandomUUID,
-  getRandomPassword,
-  getRandomNumber,
-  getRandomBoolean,
-  getRandomDate,
-  getRandomColor,
-  getRandomImage,
-  getRandomName,
-  secureRandomInt
+  getRandomArbitrary, getRandomBase64String, getRandomBoolean, getRandomBytes, getRandomColor, getRandomDate, getRandomHexString, getRandomImage, getRandomInt,
+  getRandomIntInclusive, getRandomName, getRandomNumber, getRandomPassword, getRandomString, getRandomUUID, secureRandomInt
 };
