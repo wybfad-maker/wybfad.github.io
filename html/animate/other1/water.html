@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>水波纹 · 星尘</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      user-select: none;
+    }
+
+    body {
+      min-height: 100vh;
+      background: #0b0e1a;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    .container {
+      position: relative;
+      width: 90vmin;
+      height: 90vmin;
+      max-width: 700px;
+      max-height: 700px;
+      background: radial-gradient(circle at 30% 30%, #1a1f2f, #0a0c16);
+      border-radius: 48px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7), inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+      cursor: crosshair;
+      overflow: hidden;
+      touch-action: none;
+      /* 移动端阻止滚动/缩放 */
+    }
+
+    /* 所有动态效果都绘制在 canvas 上，容器只作为遮罩和定位 */
+    #fxCanvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+      pointer-events: none;
+      /* 让鼠标事件穿透给容器 */
+      border-radius: 48px;
+    }
+
+    /* 提示文字，纯粹装饰 */
+    .hint {
+      position: absolute;
+      bottom: 20px;
+      left: 0;
+      right: 0;
+      text-align: center;
+      color: rgba(255, 255, 255, 0.2);
+      font-size: 14px;
+      letter-spacing: 2px;
+      pointer-events: none;
+      font-weight: 300;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+    }
+
+    .hint span {
+      display: inline-block;
+      background: rgba(255, 255, 255, 0.03);
+      padding: 6px 18px;
+      border-radius: 60px;
+      backdrop-filter: blur(2px);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+    }
+
+    @media (max-width: 500px) {
+      .container {
+        width: 98vmin;
+        height: 98vmin;
+        border-radius: 28px;
+      }
+
+      #fxCanvas {
+        border-radius: 28px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container" id="rippleContainer">
+    <canvas id="fxCanvas"></canvas>
+    <div class="hint"><span>点击 · 水波星尘</span></div>
+  </div>
+
+  <script>
+    (function () {
+      const container = document.getElementById('rippleContainer');
+      const canvas = document.getElementById('fxCanvas');
+      const ctx = canvas.getContext('2d');
+
+      // ---------- 尺寸自适应 ----------
+      let width, height;
+      function resizeCanvas() {
+        const rect = container.getBoundingClientRect();
+        const dpr = window.devicePixelRatio || 1;
+        width = rect.width;
+        height = rect.height;
+        canvas.width = width * dpr;
+        canvas.height = height * dpr;
+        canvas.style.width = width + 'px';
+        canvas.style.height = height + 'px';
+        ctx.scale(dpr, dpr);
+      }
+      window.addEventListener('resize', resizeCanvas);
+      resizeCanvas();
+
+      // ---------- 效果池 ----------
+      // 水波纹：透明圆环，向外扩散消失
+      let ripples = [];
+      // 发光星星：小光点，随机位置围绕点击点，渐隐
+      let stars = [];
+      // 彩色小圆：随机色彩，从点击点向四周飞散，变大，消失
+      let particles = [];
+
+      // ---------- 工具函数 ----------
+      function randomColor() {
+        const h = Math.floor(Math.random() * 360);
+        const s = 70 + Math.floor(Math.random() * 30);
+        const l = 55 + Math.floor(Math.random() * 35);
+        return `hsl(${h}, ${s}%, ${l}%)`;
+      }
+
+      // 生成随机方向 (弧度)
+      function randomAngle() {
+        return Math.random() * 2 * Math.PI;
+      }
+
+      // ---------- 点击事件：生成所有效果 ----------
+      function handleClick(e) {
+        // 获取相对于容器的坐标 (px)
+        const rect = container.getBoundingClientRect();
+        let clientX, clientY;
+        if (e.touches) {
+          // 移动端触摸
+          clientX = e.touches[0].clientX;
+          clientY = e.touches[0].clientY;
+          e.preventDefault();
+        } else {
+          clientX = e.clientX;
+          clientY = e.clientY;
+        }
+        const cx = clientX - rect.left;
+        const cy = clientY - rect.top;
+
+        // 边界保护
+        if (cx < 0 || cy < 0 || cx > width || cy > height) return;
+
+        // ---- 1. 水波纹 (透明向外扩散) ----
+        // 每个波纹包含：圆心，当前半径，最大半径，透明度(逐渐归零)
+        const maxRadius = Math.min(width, height) * 0.45 + 20;
+        ripples.push({
+          x: cx,
+          y: cy,
+          radius: 4,
+          maxRadius: maxRadius,
+          opacity: 0.9,
+          life: 0,           // 用于渐变速度
+          speed: 2.2 + Math.random() * 1.2,  // 每帧扩张速度
+        });
+
+        // ---- 2. 发光星星 (5~8颗) ----
+        const starCount = 5 + Math.floor(Math.random() * 4);
+        for (let i = 0; i < starCount; i++) {
+          // 星星围绕点击点，半径 20~120px 随机
+          const angle = randomAngle();
+          const dist = 25 + Math.random() * 100;
+          const sx = cx + Math.cos(angle) * dist;
+          const sy = cy + Math.sin(angle) * dist;
+          // 确保在画布内 (边缘裁剪)
+          const clampedX = Math.min(Math.max(sx, 8), width - 8);
+          const clampedY = Math.min(Math.max(sy, 8), height - 8);
+          // 大小随机 3~10px
+          const size = 3 + Math.random() * 7;
+          // 亮度、颜色：暖白/冷白/淡彩
+          const hue = 40 + Math.random() * 40; // 暖色倾向
+          const color = `hsl(${hue}, 90%, 85%)`;
+          stars.push({
+            x: clampedX,
+            y: clampedY,
+            radius: size,
+            baseRadius: size,
+            opacity: 0.9 + Math.random() * 0.1,
+            life: 0,
+            decaySpeed: 0.008 + Math.random() * 0.012,
+            twinkle: Math.random() * 100,
+          });
+        }
+
+        // ---- 3. 彩色小圆 (15~25个) 向四周散开，变大，消失 ----
+        const particleCount = 16 + Math.floor(Math.random() * 14);
+        for (let i = 0; i < particleCount; i++) {
+          const angle = randomAngle();
+          // 初始速度: 向外 1.5~5 px/frame
+          const speed = 1.8 + Math.random() * 4.2;
+          // 色彩随机 (HSL)
+          const color = randomColor();
+          // 初始大小 3~8px
+          const startSize = 3 + Math.random() * 6;
+          // 每个粒子独立生命周期
+          particles.push({
+            x: cx,
+            y: cy,
+            vx: Math.cos(angle) * speed,
+            vy: Math.sin(angle) * speed,
+            radius: startSize,
+            maxRadius: startSize + 8 + Math.random() * 14, // 变大目标
+            opacity: 0.95,
+            color: color,
+            life: 0,
+            // 衰变速度 (每帧)
+            decay: 0.005 + Math.random() * 0.015,
+            // 角度用于随机旋转 (不必须，但增加丰富度)
+            angle: angle,
+          });
+        }
+      }
+
+      // ---------- 动画循环更新 + 绘制 ----------
+      function animate() {
+        // 清空画布 (透明)
+        ctx.clearRect(0, 0, width, height);
+
+        // ---- 更新 & 绘制 水波纹 ----
+        for (let i = ripples.length - 1; i >= 0; i--) {
+          const r = ripples[i];
+          r.radius += r.speed;
+          r.life += 0.02;
+          // 透明度随半径增加而降低 (指数衰减更自然)
+          const progress = r.radius / r.maxRadius;
+          r.opacity = 0.9 * (1 - progress * progress) * (1 - progress * 0.2);
+          if (r.opacity < 0.01 || r.radius >= r.maxRadius) {
+            ripples.splice(i, 1);
+            continue;
+          }
+          // 绘制圆环 (透明扩散)
+          ctx.beginPath();
+          ctx.arc(r.x, r.y, r.radius, 0, Math.PI * 2);
+          ctx.strokeStyle = `rgba(200, 220, 255, ${r.opacity * 0.35})`;
+          ctx.lineWidth = 2.2 + 1.2 * (1 - progress); // 边缘稍细
+          ctx.stroke();
+
+          // 额外内圈光晕 (更透明)
+          if (r.radius > 12) {
+            ctx.beginPath();
+            ctx.arc(r.x, r.y, r.radius * 0.65, 0, Math.PI * 2);
+            ctx.strokeStyle = `rgba(180, 210, 255, ${r.opacity * 0.15})`;
+            ctx.lineWidth = 1.8;
+            ctx.stroke();
+          }
+        }
+
+        // ---- 更新 & 绘制 星星 ----
+        for (let i = stars.length - 1; i >= 0; i--) {
+          const s = stars[i];
+          s.life += 1;
+          // 渐隐
+          s.opacity -= s.decaySpeed;
+          if (s.opacity <= 0.02) {
+            stars.splice(i, 1);
+            continue;
+          }
+          // 微弱的呼吸闪烁 (利用sin)
+          const flicker = 0.7 + 0.3 * Math.sin(s.life * 0.08 + s.twinkle);
+          const currentOpacity = s.opacity * flicker;
+          // 发光外圈 (光晕)
+          const glowSize = s.radius * 2.2;
+          const gradient = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, glowSize);
+          gradient.addColorStop(0, `rgba(255, 255, 240, ${currentOpacity * 0.9})`);
+          gradient.addColorStop(0.3, `rgba(255, 240, 200, ${currentOpacity * 0.5})`);
+          gradient.addColorStop(1, `rgba(255, 220, 180, 0)`);
+          ctx.fillStyle = gradient;
+          ctx.beginPath();
+          ctx.arc(s.x, s.y, glowSize, 0, Math.PI * 2);
+          ctx.fill();
+
+          // 核心亮点 (白色)
+          ctx.beginPath();
+          ctx.arc(s.x, s.y, s.radius * 0.5, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(255, 255, 255, ${currentOpacity * 0.9})`;
+          ctx.fill();
+          // 十字星芒 (简单)
+          ctx.strokeStyle = `rgba(255, 255, 220, ${currentOpacity * 0.25})`;
+          ctx.lineWidth = 1.2;
+          ctx.beginPath();
+          ctx.moveTo(s.x - s.radius * 1.6, s.y);
+          ctx.lineTo(s.x + s.radius * 1.6, s.y);
+          ctx.moveTo(s.x, s.y - s.radius * 1.6);
+          ctx.lineTo(s.x, s.y + s.radius * 1.6);
+          ctx.stroke();
+        }
+
+        // ---- 更新 & 绘制 彩色粒子 ----
+        for (let i = particles.length - 1; i >= 0; i--) {
+          const p = particles[i];
+          // 移动
+          p.x += p.vx;
+          p.y += p.vy;
+          // 稍微减速（空气阻力）
+          p.vx *= 0.985;
+          p.vy *= 0.985;
+          // 逐渐变大
+          if (p.radius < p.maxRadius) {
+            p.radius += 0.22 + Math.random() * 0.18;
+          }
+          // 生命衰减
+          p.life += 0.02;
+          p.opacity -= p.decay;
+          if (p.opacity <= 0.02 || p.x < -20 || p.x > width + 20 || p.y < -20 || p.y > height + 20) {
+            particles.splice(i, 1);
+            continue;
+          }
+          // 绘制彩色小圆 (带发光柔边)
+          const rad = p.radius;
+          // 外层柔和光晕
+          const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, rad * 1.6);
+          grad.addColorStop(0, p.color.replace('hsl', 'hsla').replace(')', `, ${p.opacity * 0.9})`));
+          grad.addColorStop(0.6, p.color.replace('hsl', 'hsla').replace(')', `, ${p.opacity * 0.5})`));
+          grad.addColorStop(1, p.color.replace('hsl', 'hsla').replace(')', `, 0)`));
+          ctx.fillStyle = grad;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, rad * 1.6, 0, Math.PI * 2);
+          ctx.fill();
+
+          // 核心圆 (实心)
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, rad * 0.75, 0, Math.PI * 2);
+          ctx.fillStyle = p.color.replace('hsl', 'hsla').replace(')', `, ${p.opacity * 0.95})`);
+          ctx.fill();
+          // 高光小点
+          ctx.beginPath();
+          ctx.arc(p.x - rad * 0.2, p.y - rad * 0.2, rad * 0.2, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(255, 255, 255, ${p.opacity * 0.5})`;
+          ctx.fill();
+        }
+
+        // 继续下一帧
+        requestAnimationFrame(animate);
+      }
+
+      // ---------- 绑定事件 (鼠标 + 触摸) ----------
+      container.addEventListener('click', handleClick);
+      container.addEventListener('touchstart', handleClick, { passive: false });
+
+      // ---------- 启动动画 ----------
+      animate();
+
+      // 窗口变化重置画布尺寸 (已通过resize事件)
+      // 额外：resize 后清空效果? 保持效果继续，但为了视觉整洁，不清除 (效果会自然消失)
+      // 但 resize 时画布缩放可能错位，重新设置缩放。我们通过 resizeCanvas 处理好
+      // 由于效果坐标基于容器尺寸，resize后坐标仍然相对有效，但旧效果可能偏移。
+      // 作为优化，resize时清除所有效果 (更干净)
+      window.addEventListener('resize', function () {
+        ripples = [];
+        stars = [];
+        particles = [];
+        resizeCanvas();
+      });
+
+      // 可选: 小彩蛋 (初始化时生成几个示例? 无)
+      console.log('✨ 水波纹 · 星尘 已启动');
+    })();
+  </script>
+</body>
+
+</html>
